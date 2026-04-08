@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F3F3F3"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="230dp"
+            android:background="#173548"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/imgLogoSuperior"
+                android:layout_width="140dp"
+                android:layout_height="140dp"
+                android:contentDescription="Logo superior"
+                android:scaleType="fitCenter"
+                android:src="@drawable/logo" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#F3F3F3"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingTop="22dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="30dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="18dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imgPerfil"
+                    android:layout_width="82dp"
+                    android:layout_height="82dp"
+                    android:background="@drawable/circulo_gris"
+                    android:contentDescription="Perfil"
+                    android:padding="18dp"
+                    android:scaleType="centerInside"
+                    android:src="@android:drawable/ic_menu_edit"
+                    android:tint="#000000" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txtNombre"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Vania Lima"
+                        android:textColor="#263746"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtInstrumento"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Batería"
+                        android:textColor="#B8B8B8"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnMisAlumnos"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginStart="14dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="14dp"
+                android:background="@drawable/boton_gris"
+                android:backgroundTint="@null"
+                android:elevation="5dp"
+                android:text="Mis Alumnos"
+                android:textAllCaps="false"
+                android:textColor="#222222"
+                android:textSize="14sp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnHorario"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginStart="14dp"
+                android:layout_marginTop="18dp"
+                android:layout_marginEnd="14dp"
+                android:background="@drawable/boton_gris"
+                android:backgroundTint="@null"
+                android:elevation="5dp"
+                android:text="Horario"
+                android:textAllCaps="false"
+                android:textColor="#222222"
+                android:textSize="14sp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnReporteClase"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginStart="14dp"
+                android:layout_marginTop="18dp"
+                android:layout_marginEnd="14dp"
+                android:background="@drawable/boton_gris"
+                android:backgroundTint="@null"
+                android:elevation="5dp"
+                android:text="Reporte de Clase"
+                android:textAllCaps="false"
+                android:textColor="#222222"
+                android:textSize="14sp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnAsignarRecompensa"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginStart="14dp"
+                android:layout_marginTop="18dp"
+                android:layout_marginEnd="14dp"
+                android:background="@drawable/boton_gris"
+                android:backgroundTint="@null"
+                android:elevation="5dp"
+                android:text="Asignar Recompensa"
+                android:textAllCaps="false"
+                android:textColor="#222222"
+                android:textSize="14sp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnTarea"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginStart="14dp"
+                android:layout_marginTop="18dp"
+                android:layout_marginEnd="14dp"
+                android:background="@drawable/boton_gris"
+                android:backgroundTint="@null"
+                android:elevation="5dp"
+                android:text="Dejar Tarea"
+                android:textAllCaps="false"
+                android:textColor="#222222"
+                android:textSize="14sp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnSeleccionarLibro"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginStart="14dp"
+                android:layout_marginTop="18dp"
+                android:layout_marginEnd="14dp"
+                android:background="@drawable/boton_gris"
+                android:backgroundTint="@null"
+                android:elevation="5dp"
+                android:text="Seleccionar Libro"
+                android:textAllCaps="false"
+                android:textColor="#222222"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
