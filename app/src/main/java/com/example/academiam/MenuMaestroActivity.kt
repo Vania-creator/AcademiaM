@@ -42,15 +42,21 @@ class MenuMaestroActivity : AppCompatActivity() {
         }
 
         btnReporteClase.setOnClickListener {
-            startActivity(Intent(this, ReporteClaseActivity::class.java))
+            val intent = Intent(this, ReporteClaseActivity::class.java)
+            intent.putExtra("TEACHER_ID", teacherId) // <-- ¡Esto es lo que faltaba!
+            startActivity(intent)
         }
 
         btnTarea.setOnClickListener {
-            startActivity(Intent(this, TareaActivity::class.java))
+            val intent = Intent(this, TareaActivity::class.java)
+            intent.putExtra("TEACHER_ID", teacherId) // También pásalo aquí para cuando hagas tareas
+            startActivity(intent)
         }
 
-        btnSeleccionarLibro.setOnClickListener {
-            startActivity(Intent(this, LibrosActivity::class.java))
+        btnHorario.setOnClickListener {
+            val intent = Intent(this, HorarioActivity::class.java)
+            intent.putExtra("TEACHER_ID", teacherId)
+            startActivity(intent)
         }
 
         btnLogout.setOnClickListener {
