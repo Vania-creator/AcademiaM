@@ -15,7 +15,6 @@
             android:layout_height="220dp"
             android:background="#173548"
             android:gravity="center">
-
             <ImageView
                 android:layout_width="150dp"
                 android:layout_height="150dp"
@@ -27,8 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp"
-            android:background="#F3F3F3">
+            android:padding="20dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -52,84 +50,63 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/txtNombrePerfil"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Vania Lima"
+                        android:text="Cargando..."
                         android:textColor="#222222"
-                        android:textSize="16sp" />
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+
+                    <LinearLayout
+                        android:id="@+id/containerHorarios"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginTop="2dp" />
 
                     <TextView
+                        android:id="@+id/txtTutorPerfil"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Piano"
-                        android:textColor="#555555"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Lunes 4:45pm"
-                        android:textColor="#555555"
-                        android:textSize="14sp" />
+                        android:text="Tutor: N/A"
+                        android:textColor="#757575"
+                        android:textSize="13sp" />
                 </LinearLayout>
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/txtRachaPerfil"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="73 Dias"
-                        android:textColor="#555555"
-                        android:textSize="14sp" />
-                </LinearLayout>
+                    android:text="0 Dias"
+                    android:textColor="#E64A19"
+                    android:textStyle="bold"
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Ultimas Insignias:"
+                android:text="Últimas Insignias:"
                 android:textColor="#222222"
                 android:textSize="16sp"
                 android:layout_marginBottom="12dp" />
 
             <LinearLayout
+                android:id="@+id/containerInsignias"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center"
                 android:layout_marginBottom="18dp">
-
-                <View
-                    android:layout_width="55dp"
-                    android:layout_height="55dp"
-                    android:background="@drawable/circulo_gris"
-                    android:layout_marginEnd="12dp" />
-
-                <View
-                    android:layout_width="55dp"
-                    android:layout_height="55dp"
-                    android:background="@drawable/circulo_gris"
-                    android:layout_marginEnd="12dp" />
-
-                <View
-                    android:layout_width="55dp"
-                    android:layout_height="55dp"
-                    android:background="@drawable/circulo_gris"
-                    android:layout_marginEnd="12dp" />
-
-                <View
-                    android:layout_width="55dp"
-                    android:layout_height="55dp"
-                    android:background="@drawable/circulo_gris" />
+                <View android:layout_width="50dp" android:layout_height="50dp" android:background="@drawable/circulo_gris" android:layout_margin="5dp"/>
+                <View android:layout_width="50dp" android:layout_height="50dp" android:background="@drawable/circulo_gris" android:layout_margin="5dp"/>
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="190dp"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="#D8D8D8"
                 android:padding="16dp"
@@ -138,31 +115,34 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Tarea:"
+                    android:text="Tarea Pendiente:"
                     android:textColor="#222222"
                     android:textSize="16sp"
-                    android:layout_marginBottom="12dp" />
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/txtTareaDesc"
                     android:layout_width="match_parent"
-                    android:layout_height="62dp"
+                    android:layout_height="wrap_content"
+                    android:text="No hay tareas asignadas"
                     android:background="#BDBDBD"
-                    android:gravity="center_vertical"
-                    android:paddingStart="18dp"
-                    android:paddingEnd="18dp">
+                    android:padding="12dp"
+                    android:textColor="#222222" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Leccion 3 - Actividad 5"
-                        android:textColor="#222222"
-                        android:textSize="15sp" />
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/txtTareaAsignadaPor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Asignada por: --"
+                    android:textSize="12sp"
+                    android:layout_marginTop="4dp"
+                    android:textColor="#666666" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="190dp"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="#D8D8D8"
                 android:padding="16dp"
@@ -171,26 +151,20 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Reporte de Clase:"
+                    android:text="Último Reporte de Clase:"
                     android:textColor="#222222"
                     android:textSize="16sp"
-                    android:layout_marginBottom="12dp" />
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/txtReporteDesc"
                     android:layout_width="match_parent"
-                    android:layout_height="62dp"
+                    android:layout_height="wrap_content"
+                    android:text="Sin reportes recientes"
                     android:background="#BDBDBD"
-                    android:gravity="center_vertical"
-                    android:paddingStart="18dp"
-                    android:paddingEnd="18dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Clase 1: Lecciones basicas"
-                        android:textColor="#222222"
-                        android:textSize="15sp" />
-                </LinearLayout>
+                    android:padding="12dp"
+                    android:textColor="#222222" />
             </LinearLayout>
 
             <LinearLayout
@@ -222,8 +196,6 @@
                     android:textAllCaps="false"
                     android:textColor="#222222" />
             </LinearLayout>
-
         </LinearLayout>
-
     </LinearLayout>
 </ScrollView>
