@@ -2,7 +2,9 @@ package com.example.academiam
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -34,85 +36,113 @@ class PerfilAlumnoActivity : AppCompatActivity() {
     }
 
     private fun cargarDatosAlumno(id: String) {
-        // 1. Datos personales del alumno (Colección: students)
+        // 1. Datos básicos del alumno
         db.collection("students").document(id).get().addOnSuccessListener { doc ->
             if (doc.exists()) {
                 findViewById<TextView>(R.id.txtNombrePerfil).text = doc.getString("nombre")
                 findViewById<TextView>(R.id.txtTutorPerfil).text = "Tutor: ${doc.getString("nombreTutor") ?: "N/A"}"
                 findViewById<TextView>(R.id.txtRachaPerfil).text = "${doc.getLong("racha") ?: 0} Días"
-
             }
         }
 
-// 2. BUSCAR TODOS LOS HORARIOS FIJOS (Filtrando repetidos)
-        val containerHorarios = findViewById<LinearLayout>(R.id.containerHorarios)
-
-        db.collection("classes")
+        // 2. BUSCAR REPORTES (Aquí se generan las insignias y el último reporte)
+        db.collection("reports")
             .whereEqualTo("studentId", id)
-            .whereEqualTo("type", "fija")
+            .orderBy("date", com.google.firebase.firestore.Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { query ->
-                containerHorarios.removeAllViews()
-
                 if (!query.isEmpty) {
-                    // Usamos un Set para guardar las combinaciones únicas
-                    val horariosYaMostrados = mutableSetOf<String>()
+                    // MOSTRAR ÚLTIMO REPORTE
+                    val ultimoDoc = query.documents[0]
+                    findViewById<TextView>(R.id.txtFechaReportePerfil).text = "Clase del: ${ultimoDoc.getString("date")}"
+                    findViewById<TextView>(R.id.txtReporteDesc).text = ultimoDoc.getString("content")
 
-                    for (clase in query) {
-                        val dia = clase.getString("dayOfWeek") ?: ""
-                        val hora = clase.getString("time") ?: ""
-                        val instrumento = clase.getString("instrument") ?: ""
-                        val maestro = clase.getString("teacherName") ?: "Sin asignar"
+                    // PROCESAR INSIGNIAS ÚNICAS
+                    val containerInsignias = findViewById<LinearLayout>(R.id.containerInsignias)
+                    containerInsignias.removeAllViews()
 
-                        // Creamos una "llave" única para comparar
-                        val llaveUnica = "$instrumento-$dia-$hora-$maestro".lowercase().trim()
-
-                        // Si esta combinación NO ha sido mostrada, la agregamos
-                        if (!horariosYaMostrados.contains(llaveUnica)) {
-                            horariosYaMostrados.add(llaveUnica)
-
-                            val tvHorario = TextView(this)
-                            tvHorario.text = "• $instrumento: $dia $hora con $maestro"
-                            tvHorario.setTextColor(android.graphics.Color.parseColor("#555555"))
-                            tvHorario.textSize = 14f
-                            tvHorario.setPadding(0, 4, 0, 4)
-
-                            containerHorarios.addView(tvHorario)
-
+                    val insigniasUnicas = mutableSetOf<String>()
+                    for (doc in query) {
+                        val ins = doc.getString("insignia")
+                        if (ins != null && ins != "Ninguna") {
+                            insigniasUnicas.add(ins)
                         }
                     }
+
+                    for (nombre in insigniasUnicas) {
+                        val img = ImageView(this)
+                        val params = LinearLayout.LayoutParams(120, 120)
+                        params.setMargins(10, 0, 10, 0)
+                        img.layoutParams = params
+                        img.setImageResource(R.drawable.logo) // Aquí va tu icono de medalla
+                        img.setBackgroundResource(R.drawable.circulo_gris)
+                        img.setPadding(15, 15, 15, 15)
+                        containerInsignias.addView(img)
+                    }
                 } else {
-                    val tvVacio = TextView(this)
-                    tvVacio.text = "Sin clases fijas asignadas"
-                    containerHorarios.addView(tvVacio)
+                    findViewById<TextView>(R.id.txtReporteDesc).text = "Sin reportes aún"
                 }
             }
-
-        // 3. Tarea más reciente (Colección: tasks)
-        db.collection("tasks")
-            .whereEqualTo("studentId", id)
-            .orderBy("createdAt", Query.Direction.DESCENDING)
-            .limit(1)
-            .get()
-            .addOnSuccessListener { query ->
-                if (!query.isEmpty) {
-                    val tarea = query.documents[0]
-                    findViewById<TextView>(R.id.txtTareaDesc).text = tarea.getString("description")
-                    findViewById<TextView>(R.id.txtTareaAsignadaPor).text = "Asignada por: ${tarea.getString("teacherName")}"
-                }
+            .addOnFailureListener { e ->
+                Log.e("FIRESTORE_ERROR", "Si ves un link aquí, hazle clic: ${e.message}")
             }
 
-        // 4. Último reporte (Colección: reports)
+        // 3. Configurar botón de historial
+        findViewById<TextView>(R.id.btnVerHistorialReportes).setOnClickListener {
+            val intent = Intent(this, HistorialReportesActivity::class.java)
+            intent.putExtra("STUDENT_ID", id)
+            intent.putExtra("STUDENT_NAME", findViewById<TextView>(R.id.txtNombrePerfil).text.toString())
+            startActivity(intent)
+        }
+
+
+// 4. Consultar Reportes para sacar la Racha, el Último Reporte y las Insignias
         db.collection("reports")
             .whereEqualTo("studentId", id)
             .orderBy("date", Query.Direction.DESCENDING)
-            .limit(1)
             .get()
             .addOnSuccessListener { query ->
                 if (!query.isEmpty) {
-                    val reporte = query.documents[0]
-                    findViewById<TextView>(R.id.txtReporteDesc).text = reporte.getString("content")
+                    // MOSTRAR ÚLTIMO REPORTE (El primero de la lista por el DESCENDING)
+                    val ultimoDoc = query.documents[0]
+                    findViewById<TextView>(R.id.txtFechaReportePerfil).text = "Clase del: ${ultimoDoc.getString("date")}"
+                    findViewById<TextView>(R.id.txtReporteDesc).text = ultimoDoc.getString("content")
+
+                    // MOSTRAR INSIGNIAS ÚNICAS
+                    val containerInsignias = findViewById<LinearLayout>(R.id.containerInsignias)
+                    containerInsignias.removeAllViews()
+
+                    val insigniasGanadas = mutableSetOf<String>()
+
+                    for (doc in query) {
+                        val insignia = doc.getString("insignia")
+                        if (insignia != null && insignia != "Ninguna" && insignia.isNotEmpty()) {
+                            insigniasGanadas.add(insignia)
+                        }
+                    }
+
+                    // Dibujar las insignias que encontró
+                    for (nombreInsignia in insigniasGanadas) {
+                        val img = ImageView(this)
+                        img.layoutParams = LinearLayout.LayoutParams(110, 110).apply { setMargins(8,0,8,0) }
+                        img.setImageResource(R.drawable.logo) // Aquí usarías el icono real
+                        img.setBackgroundResource(R.drawable.circulo_gris)
+                        img.setPadding(10,10,10,10)
+                        containerInsignias.addView(img)
+                    }
                 }
             }
+            .addOnFailureListener { e ->
+                Log.e("FIRESTORE", "Error: ${e.message}")
+                // Si aquí sale error de index, abre el link del Logcat
+            }
+
+// 5. Configurar botón para ver todo el historial
+        findViewById<TextView>(R.id.btnVerHistorialReportes).setOnClickListener {
+            val intent = Intent(this, HistorialReportesActivity::class.java)
+            intent.putExtra("STUDENT_ID", id)
+            intent.putExtra("STUDENT_NAME", findViewById<TextView>(R.id.txtNombrePerfil).text.toString())
+            startActivity(intent)
+        }
     }
 }

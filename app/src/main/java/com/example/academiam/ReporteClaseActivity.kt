@@ -145,13 +145,38 @@ class ReporteClaseActivity : AppCompatActivity() {
     }
 
     private fun configurarInsignias() {
-        val imgs = listOf<ImageView>(findViewById(R.id.imgInsignia1), findViewById(R.id.imgInsignia2), findViewById(R.id.imgInsignia3), findViewById(R.id.imgInsignia4))
-        imgs.forEach { it.alpha = 0.3f }
+        val imgs = listOf<ImageView>(
+            findViewById(R.id.imgInsignia1), findViewById(R.id.imgInsignia2),
+            findViewById(R.id.imgInsignia3), findViewById(R.id.imgInsignia4)
+        )
+
         imgs.forEachIndexed { i, img ->
             img.setOnClickListener {
-                imgs.forEach { it.alpha = 0.3f }
-                img.alpha = 1.0f
-                insigniaSeleccionada = "Insignia ${i + 1}"
+                val nombreInsignia = "Insignia ${i + 1}"
+
+                if (studentIdSeleccionado.isEmpty()) {
+                    Toast.makeText(this, "Selecciona primero un alumno", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                // VERIFICAR SI YA EXISTE
+                db.collection("reports")
+                    .whereEqualTo("studentId", studentIdSeleccionado)
+                    .whereEqualTo("insignia", nombreInsignia)
+                    .get()
+                    .addOnSuccessListener { query ->
+                        if (!query.isEmpty) {
+                            // YA LA TIENE
+                            Toast.makeText(this, "Insignia ya existente en el perfil del alumno", Toast.LENGTH_SHORT).show()
+                            img.alpha = 0.1f // Se ve casi invisible indicando que no se puede usar
+                        } else {
+                            // NO LA TIENE, SELECCIONARLA
+                            imgs.forEach { it.alpha = 0.3f }
+                            img.alpha = 1.0f
+                            insigniaSeleccionada = nombreInsignia
+                            Toast.makeText(this, "$nombreInsignia seleccionada", Toast.LENGTH_SHORT).show()
+                        }
+                    }
             }
         }
     }
