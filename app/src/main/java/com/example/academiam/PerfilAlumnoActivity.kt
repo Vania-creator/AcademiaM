@@ -45,49 +45,49 @@ class PerfilAlumnoActivity : AppCompatActivity() {
             }
         }
 
-        // 2. BUSCAR REPORTES (Aquí se generan las insignias y el último reporte)
+        // 2. REPORTES E INSIGNIAS (Lógica unificada)
         db.collection("reports")
             .whereEqualTo("studentId", id)
-            .orderBy("date", com.google.firebase.firestore.Query.Direction.DESCENDING)
+            .orderBy("date", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { query ->
                 if (!query.isEmpty) {
-                    // MOSTRAR ÚLTIMO REPORTE
+                    // Mostrar el último reporte (el primero de la lista descendente)
                     val ultimoDoc = query.documents[0]
                     findViewById<TextView>(R.id.txtFechaReportePerfil).text = "Clase del: ${ultimoDoc.getString("date")}"
                     findViewById<TextView>(R.id.txtReporteDesc).text = ultimoDoc.getString("content")
 
-                    // PROCESAR INSIGNIAS ÚNICAS
+                    // Procesar insignias únicas ganadas
                     val containerInsignias = findViewById<LinearLayout>(R.id.containerInsignias)
                     containerInsignias.removeAllViews()
+                    val insigniasGanadas = mutableSetOf<String>()
 
-                    val insigniasUnicas = mutableSetOf<String>()
                     for (doc in query) {
                         val ins = doc.getString("insignia")
-                        if (ins != null && ins != "Ninguna") {
-                            insigniasUnicas.add(ins)
+                        if (ins != null && ins != "Ninguna" && ins.isNotEmpty()) {
+                            insigniasGanadas.add(ins)
                         }
                     }
 
-                    for (nombre in insigniasUnicas) {
+                    for (nombreInsignia in insigniasGanadas) {
                         val img = ImageView(this)
-                        val params = LinearLayout.LayoutParams(120, 120)
-                        params.setMargins(10, 0, 10, 0)
+                        val params = LinearLayout.LayoutParams(110, 110)
+                        params.setMargins(8, 0, 8, 0)
                         img.layoutParams = params
-                        img.setImageResource(R.drawable.logo) // Aquí va tu icono de medalla
+                        img.setImageResource(R.drawable.logo)
                         img.setBackgroundResource(R.drawable.circulo_gris)
-                        img.setPadding(15, 15, 15, 15)
+                        img.setPadding(10, 10, 10, 10)
                         containerInsignias.addView(img)
                     }
                 } else {
-                    findViewById<TextView>(R.id.txtReporteDesc).text = "Sin reportes aún"
+                    findViewById<TextView>(R.id.txtReporteDesc).text = "Sin reportes registrados"
                 }
             }
             .addOnFailureListener { e ->
-                Log.e("FIRESTORE_ERROR", "Si ves un link aquí, hazle clic: ${e.message}")
+                Log.e("FIRESTORE", "Error en reportes: ${e.message}")
             }
 
-        // 3. Configurar botón de historial
+        // 3. Configurar botón para ver historial de reportes
         findViewById<TextView>(R.id.btnVerHistorialReportes).setOnClickListener {
             val intent = Intent(this, HistorialReportesActivity::class.java)
             intent.putExtra("STUDENT_ID", id)
@@ -95,51 +95,79 @@ class PerfilAlumnoActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-
-// 4. Consultar Reportes para sacar la Racha, el Último Reporte y las Insignias
-        db.collection("reports")
+        // 4. CONSULTAR ÚLTIMA TAREA (El bloque que me pasaste)
+        db.collection("tasks")
             .whereEqualTo("studentId", id)
-            .orderBy("date", Query.Direction.DESCENDING)
+            .orderBy("createdAt", Query.Direction.DESCENDING)
+            .limit(1)
             .get()
             .addOnSuccessListener { query ->
-                if (!query.isEmpty) {
-                    // MOSTRAR ÚLTIMO REPORTE (El primero de la lista por el DESCENDING)
-                    val ultimoDoc = query.documents[0]
-                    findViewById<TextView>(R.id.txtFechaReportePerfil).text = "Clase del: ${ultimoDoc.getString("date")}"
-                    findViewById<TextView>(R.id.txtReporteDesc).text = ultimoDoc.getString("content")
+                if (query.isEmpty) {
+                    Log.d("TAREAS_DEBUG", "No hay tareas para el alumno: $id")
+                    findViewById<TextView>(R.id.txtTareaDesc).text = "Sin tareas pendientes"
+                } else {
+                    val doc = query.documents[0]
+                    val status = doc.getString("status") ?: "Pendiente"
 
-                    // MOSTRAR INSIGNIAS ÚNICAS
-                    val containerInsignias = findViewById<LinearLayout>(R.id.containerInsignias)
-                    containerInsignias.removeAllViews()
+                    findViewById<TextView>(R.id.txtTareaTituloPerfil).text = doc.getString("title")
+                    findViewById<TextView>(R.id.txtTareaDesc).text = doc.getString("description")
 
-                    val insigniasGanadas = mutableSetOf<String>()
+                    val tvStatus = findViewById<TextView>(R.id.txtStatusTareaPerfil)
+                    tvStatus.text = status.uppercase()
 
-                    for (doc in query) {
-                        val insignia = doc.getString("insignia")
-                        if (insignia != null && insignia != "Ninguna" && insignia.isNotEmpty()) {
-                            insigniasGanadas.add(insignia)
-                        }
-                    }
-
-                    // Dibujar las insignias que encontró
-                    for (nombreInsignia in insigniasGanadas) {
-                        val img = ImageView(this)
-                        img.layoutParams = LinearLayout.LayoutParams(110, 110).apply { setMargins(8,0,8,0) }
-                        img.setImageResource(R.drawable.logo) // Aquí usarías el icono real
-                        img.setBackgroundResource(R.drawable.circulo_gris)
-                        img.setPadding(10,10,10,10)
-                        containerInsignias.addView(img)
+                    // Colores visuales según el estado
+                    if (status.lowercase() == "hecha") {
+                        tvStatus.setTextColor(android.graphics.Color.parseColor("#1B5E20"))
+                        tvStatus.setBackgroundColor(android.graphics.Color.parseColor("#C8E6C9"))
+                    } else {
+                        tvStatus.setTextColor(android.graphics.Color.parseColor("#B71C1C"))
+                        tvStatus.setBackgroundColor(android.graphics.Color.parseColor("#FFCDD2"))
                     }
                 }
             }
             .addOnFailureListener { e ->
-                Log.e("FIRESTORE", "Error: ${e.message}")
-                // Si aquí sale error de index, abre el link del Logcat
+                Log.e("TAREAS_ERROR", "Error de Firestore: ${e.message}")
             }
 
-// 5. Configurar botón para ver todo el historial
-        findViewById<TextView>(R.id.btnVerHistorialReportes).setOnClickListener {
-            val intent = Intent(this, HistorialReportesActivity::class.java)
+        // 5. Configurar botón para ver todas las tareas
+        findViewById<TextView>(R.id.btnVerTodasTareas).setOnClickListener {
+            val intent = Intent(this, HistorialTareasActivity::class.java)
+            intent.putExtra("STUDENT_ID", id)
+            intent.putExtra("STUDENT_NAME", findViewById<TextView>(R.id.txtNombrePerfil).text.toString())
+            startActivity(intent)
+        }
+
+        // 6. Consultar Última Tarea Asignada
+        db.collection("tasks")
+            .whereEqualTo("studentId", id)
+            .orderBy("createdAt", com.google.firebase.firestore.Query.Direction.DESCENDING)
+            .limit(1)
+            .get()
+            .addOnSuccessListener { query ->
+                if (!query.isEmpty) {
+                    val tarea = query.documents[0]
+                    val status = tarea.getString("status") ?: "Pendiente"
+
+                    findViewById<TextView>(R.id.txtTareaTituloPerfil).text = tarea.getString("title")
+                    findViewById<TextView>(R.id.txtTareaDesc).text = tarea.getString("description")
+
+                    val tvStatus = findViewById<TextView>(R.id.txtStatusTareaPerfil)
+                    tvStatus.text = status.uppercase()
+
+                    // Cambiar color según el estado
+                    if (status.lowercase() == "hecha") {
+                        tvStatus.setTextColor(android.graphics.Color.parseColor("#1B5E20"))
+                        tvStatus.setBackgroundColor(android.graphics.Color.parseColor("#C8E6C9"))
+                    } else {
+                        tvStatus.setTextColor(android.graphics.Color.parseColor("#B71C1C"))
+                        tvStatus.setBackgroundColor(android.graphics.Color.parseColor("#FFCDD2"))
+                    }
+                }
+            }
+
+// 7. Configurar botón para ver todas las tareas
+        findViewById<TextView>(R.id.btnVerTodasTareas).setOnClickListener {
+            val intent = Intent(this, HistorialTareasActivity::class.java)
             intent.putExtra("STUDENT_ID", id)
             intent.putExtra("STUDENT_NAME", findViewById<TextView>(R.id.txtNombrePerfil).text.toString())
             startActivity(intent)

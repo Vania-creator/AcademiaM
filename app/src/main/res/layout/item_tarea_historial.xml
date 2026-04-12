@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#E5E5E5"
+    android:padding="14dp"
+    android:layout_marginBottom="12dp">
+
+    <TextView
+        android:id="@+id/txtStatusItem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PENDIENTE"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:padding="4dp"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:id="@+id/txtTituloTareaItem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Título de la Tarea"
+        android:textStyle="bold"
+        android:textColor="#173548"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/txtFechaTareaItem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Asignada: 2026-04-12"
+        android:textSize="12sp"
+        android:textColor="#666666" />
+
+    <TextView
+        android:id="@+id/txtDescTareaItem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Descripción detallada de la tarea..."
+        android:textColor="#222222" />
+</LinearLayout>
