@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "984728076608",
+    "project_id": "moncayo-sistem",
+    "storage_bucket": "moncayo-sistem.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:984728076608:android:160f19eeca5d7d465e3aa5",
+        "android_client_info": {
+          "package_name": "com.example.academiam"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDMYxjwRKVjNkAUTmfTLGT_nPrKmAKoUAE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
