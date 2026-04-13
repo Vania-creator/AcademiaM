@@ -3,7 +3,6 @@ package com.example.academiam
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -23,20 +22,23 @@ class PerfilAlumnoActivity : AppCompatActivity() {
 
         val studentId = intent.getStringExtra("STUDENT_ID") ?: ""
 
-        val btnRegresar = findViewById<AppCompatButton>(R.id.btnRegresarPerfil)
-        val btnGrabaciones = findViewById<AppCompatButton>(R.id.btnGrabaciones)
+        findViewById<AppCompatButton>(R.id.btnRegresarPerfil).setOnClickListener { finish() }
 
-        btnRegresar.setOnClickListener { finish() }
+        findViewById<AppCompatButton>(R.id.btnGrabaciones).setOnClickListener {
+            if (studentId.isNotEmpty()) {
+                val intent = Intent(this, GrabacionesActivity::class.java)
+                intent.putExtra("STUDENT_ID", studentId)
+                startActivity(intent)
+            }
+        }
 
         if (studentId.isNotEmpty()) {
             cargarDatosAlumno(studentId)
-        } else {
-            Toast.makeText(this, "Error al cargar el alumno", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun cargarDatosAlumno(id: String) {
-        // 1. Datos básicos del alumno
+        // 1. DATOS BÁSICOS
         db.collection("students").document(id).get().addOnSuccessListener { doc ->
             if (doc.exists()) {
                 findViewById<TextView>(R.id.txtNombrePerfil).text = doc.getString("nombre")
@@ -45,19 +47,64 @@ class PerfilAlumnoActivity : AppCompatActivity() {
             }
         }
 
-        // 2. REPORTES E INSIGNIAS (Lógica unificada)
+// --- PARTE 2: INFORMACIÓN DE CLASES FIJAS (Filtrado Estricto 🛡️) ---
+        db.collection("classes")
+            .whereEqualTo("studentId", id)
+            .get()
+            .addOnSuccessListener { query ->
+                val txtInstrumento = findViewById<TextView>(R.id.txtInstrumentoPerfil)
+                val txtHorario = findViewById<TextView>(R.id.txtHorarioPerfil)
+
+                if (!query.isEmpty) {
+                    val infoClases = StringBuilder()
+                    val instrumentosUnicos = mutableSetOf<String>()
+                    val horariosVistos = mutableSetOf<String>()
+
+                    for (doc in query) {
+                        // Filtramos por tipo: Solo las que son "fija"
+                        val tipo = doc.getString("type") ?: doc.getString("tipo") ?: ""
+
+                        if (tipo == "fija") {
+                            val dia = doc.getString("dayOfWeek") ?: ""
+                            val hora = doc.getString("time") ?: ""
+                            val inst = doc.getString("instrument") ?: ""
+                            val maestro = doc.getString("teacherName") ?: "Profe"
+
+                            val llaveUnica = "$dia-$hora"
+
+                            if (!horariosVistos.contains(llaveUnica)) {
+                                horariosVistos.add(llaveUnica)
+                                instrumentosUnicos.add(inst)
+                                // Formato compacto: "• Lun 4:00pm [Piano] con César"
+                                infoClases.append("• $dia $hora [$inst] con $maestro\n")
+                            }
+                        }
+                    }
+
+                    // Si después de filtrar no quedaron fijas
+                    if (horariosVistos.isEmpty()) {
+                        txtInstrumento.text = "Sin asignar"
+                        txtHorario.text = "No tiene clases fijas este semestre"
+                    } else {
+                        txtInstrumento.text = instrumentosUnicos.joinToString(" + ")
+                        txtHorario.text = infoClases.toString().trim()
+                    }
+                } else {
+                    txtInstrumento.text = "Sin asignar"
+                    txtHorario.text = "Sin clases registradas"
+                }
+            }
+        // 3. REPORTES E INSIGNIAS (ÚNICAS)
         db.collection("reports")
             .whereEqualTo("studentId", id)
             .orderBy("date", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { query ->
                 if (!query.isEmpty) {
-                    // Mostrar el último reporte (el primero de la lista descendente)
                     val ultimoDoc = query.documents[0]
                     findViewById<TextView>(R.id.txtFechaReportePerfil).text = "Clase del: ${ultimoDoc.getString("date")}"
                     findViewById<TextView>(R.id.txtReporteDesc).text = ultimoDoc.getString("content")
 
-                    // Procesar insignias únicas ganadas
                     val containerInsignias = findViewById<LinearLayout>(R.id.containerInsignias)
                     containerInsignias.removeAllViews()
                     val insigniasGanadas = mutableSetOf<String>()
@@ -83,11 +130,41 @@ class PerfilAlumnoActivity : AppCompatActivity() {
                     findViewById<TextView>(R.id.txtReporteDesc).text = "Sin reportes registrados"
                 }
             }
-            .addOnFailureListener { e ->
-                Log.e("FIRESTORE", "Error en reportes: ${e.message}")
+
+        // 4. ÚLTIMA TAREA ASIGNADA
+        db.collection("tasks")
+            .whereEqualTo("studentId", id)
+            .orderBy("createdAt", Query.Direction.DESCENDING)
+            .limit(1)
+            .get()
+            .addOnSuccessListener { query ->
+                val tvTitulo = findViewById<TextView>(R.id.txtTareaTituloPerfil)
+                val tvDesc = findViewById<TextView>(R.id.txtTareaDesc)
+                val tvStatus = findViewById<TextView>(R.id.txtStatusTareaPerfil)
+
+                if (query.isEmpty) {
+                    tvTitulo.text = "No hay tareas"
+                    tvDesc.text = "El maestro no ha asignado tareas aún."
+                    tvStatus.visibility = android.view.View.GONE
+                } else {
+                    val doc = query.documents[0]
+                    val status = doc.getString("status") ?: "Pendiente"
+                    tvStatus.visibility = android.view.View.VISIBLE
+                    tvTitulo.text = doc.getString("title")
+                    tvDesc.text = doc.getString("description")
+                    tvStatus.text = status.uppercase()
+
+                    if (status.lowercase() == "hecha") {
+                        tvStatus.setTextColor(android.graphics.Color.parseColor("#1B5E20"))
+                        tvStatus.setBackgroundColor(android.graphics.Color.parseColor("#C8E6C9"))
+                    } else {
+                        tvStatus.setTextColor(android.graphics.Color.parseColor("#B71C1C"))
+                        tvStatus.setBackgroundColor(android.graphics.Color.parseColor("#FFCDD2"))
+                    }
+                }
             }
 
-        // 3. Configurar botón para ver historial de reportes
+        // 5. BOTONES DE HISTORIAL
         findViewById<TextView>(R.id.btnVerHistorialReportes).setOnClickListener {
             val intent = Intent(this, HistorialReportesActivity::class.java)
             intent.putExtra("STUDENT_ID", id)
@@ -95,77 +172,6 @@ class PerfilAlumnoActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // 4. CONSULTAR ÚLTIMA TAREA (El bloque que me pasaste)
-        db.collection("tasks")
-            .whereEqualTo("studentId", id)
-            .orderBy("createdAt", Query.Direction.DESCENDING)
-            .limit(1)
-            .get()
-            .addOnSuccessListener { query ->
-                if (query.isEmpty) {
-                    Log.d("TAREAS_DEBUG", "No hay tareas para el alumno: $id")
-                    findViewById<TextView>(R.id.txtTareaDesc).text = "Sin tareas pendientes"
-                } else {
-                    val doc = query.documents[0]
-                    val status = doc.getString("status") ?: "Pendiente"
-
-                    findViewById<TextView>(R.id.txtTareaTituloPerfil).text = doc.getString("title")
-                    findViewById<TextView>(R.id.txtTareaDesc).text = doc.getString("description")
-
-                    val tvStatus = findViewById<TextView>(R.id.txtStatusTareaPerfil)
-                    tvStatus.text = status.uppercase()
-
-                    // Colores visuales según el estado
-                    if (status.lowercase() == "hecha") {
-                        tvStatus.setTextColor(android.graphics.Color.parseColor("#1B5E20"))
-                        tvStatus.setBackgroundColor(android.graphics.Color.parseColor("#C8E6C9"))
-                    } else {
-                        tvStatus.setTextColor(android.graphics.Color.parseColor("#B71C1C"))
-                        tvStatus.setBackgroundColor(android.graphics.Color.parseColor("#FFCDD2"))
-                    }
-                }
-            }
-            .addOnFailureListener { e ->
-                Log.e("TAREAS_ERROR", "Error de Firestore: ${e.message}")
-            }
-
-        // 5. Configurar botón para ver todas las tareas
-        findViewById<TextView>(R.id.btnVerTodasTareas).setOnClickListener {
-            val intent = Intent(this, HistorialTareasActivity::class.java)
-            intent.putExtra("STUDENT_ID", id)
-            intent.putExtra("STUDENT_NAME", findViewById<TextView>(R.id.txtNombrePerfil).text.toString())
-            startActivity(intent)
-        }
-
-        // 6. Consultar Última Tarea Asignada
-        db.collection("tasks")
-            .whereEqualTo("studentId", id)
-            .orderBy("createdAt", com.google.firebase.firestore.Query.Direction.DESCENDING)
-            .limit(1)
-            .get()
-            .addOnSuccessListener { query ->
-                if (!query.isEmpty) {
-                    val tarea = query.documents[0]
-                    val status = tarea.getString("status") ?: "Pendiente"
-
-                    findViewById<TextView>(R.id.txtTareaTituloPerfil).text = tarea.getString("title")
-                    findViewById<TextView>(R.id.txtTareaDesc).text = tarea.getString("description")
-
-                    val tvStatus = findViewById<TextView>(R.id.txtStatusTareaPerfil)
-                    tvStatus.text = status.uppercase()
-
-                    // Cambiar color según el estado
-                    if (status.lowercase() == "hecha") {
-                        tvStatus.setTextColor(android.graphics.Color.parseColor("#1B5E20"))
-                        tvStatus.setBackgroundColor(android.graphics.Color.parseColor("#C8E6C9"))
-                    } else {
-                        tvStatus.setTextColor(android.graphics.Color.parseColor("#B71C1C"))
-                        tvStatus.setBackgroundColor(android.graphics.Color.parseColor("#FFCDD2"))
-                    }
-                }
-            }
-
-// 7. Configurar botón para ver todas las tareas
         findViewById<TextView>(R.id.btnVerTodasTareas).setOnClickListener {
             val intent = Intent(this, HistorialTareasActivity::class.java)
             intent.putExtra("STUDENT_ID", id)
