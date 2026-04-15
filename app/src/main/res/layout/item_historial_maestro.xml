@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:gravity="center_vertical">
+
+    <TextView
+        android:id="@+id/histFecha"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.8"
+        android:text="2026-02-27"
+        android:textSize="11sp"
+        android:textColor="#444444"/>
+
+    <TextView
+        android:id="@+id/histTipo"
+        android:layout_width="65dp"
+        android:layout_height="wrap_content"
+        android:text="MUESTRA"
+        android:textSize="9sp"
+        android:gravity="center"
+        android:padding="3dp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:background="#7B1FA2"/>
+
+    <TextView
+        android:id="@+id/histAlumno"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Juan Perez"
+        android:textSize="11sp"
+        android:layout_marginStart="10dp"
+        android:textColor="#222222"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/histInstrumento"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.7"
+        android:text="Piano"
+        android:textSize="11sp"
+        android:gravity="end"
+        android:textColor="#173548"/>
+</LinearLayout>

@@ -1,108 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
     android:background="#F3F3F3">
 
-    <LinearLayout
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnRegresar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="55dp"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="20dp"
+        android:background="@drawable/boton_gris"
+        android:backgroundTint="@null"
+        android:text="Regresar al Menú"
+        android:textAllCaps="false"
+        android:textColor="#222222"
+        android:textStyle="bold"
+        android:elevation="4dp"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:background="#173548"
-            android:gravity="center">
 
-            <ImageView
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:src="@drawable/logo"
-                android:contentDescription="Logo" />
-        </LinearLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/btnRegresar"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="#173548"
+                android:gravity="center">
+                <ImageView
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
+                    android:src="@drawable/logo"
+                    android:contentDescription="Logo" />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="#E5E5E5"
-                android:padding="15dp"
-                android:layout_marginBottom="20dp">
+                android:padding="20dp">
 
                 <LinearLayout
-                    android:id="@+id/itemAlumno1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#D1D1D1"
-                    android:padding="12dp"
-                    android:layout_marginBottom="12dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:clickable="true"
-                    android:focusable="true">
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
-                    <View
-                        android:layout_width="50dp"
+                    <EditText
+                        android:id="@+id/etBuscarAlumno"
+                        android:layout_width="match_parent"
                         android:layout_height="50dp"
-                        android:background="@drawable/circulo_gris" />
+                        android:background="@drawable/boton_gris"
+                        android:backgroundTint="#FFFFFF"
+                        android:drawableStart="@android:drawable/ic_menu_search"
+                        android:drawablePadding="10dp"
+                        android:hint="Buscar alumno por nombre..."
+                        android:paddingStart="15dp"
+                        android:layout_marginBottom="15dp"
+                        android:inputType="textPersonName"
+                        android:elevation="2dp"/>
 
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="12dp"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Vania Lima"
-                            android:textColor="#000000"
-                            android:textSize="16sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Progreso"
-                            android:textColor="#555555"
-                            android:textSize="13sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center">
+                        android:text="Lista de Alumnos Activos"
+                        android:textColor="#173548"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="15dp"/>
+                    <TextView
+                        android:id="@+id/txtSinAlumnos"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="No tienes aún alumnos registrados"
+                        android:textColor="#888888"
+                        android:textSize="16sp"
+                        android:gravity="center"
+                        android:padding="20dp"
+                        android:visibility="gone" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="73 Dias"
-                            android:textSize="12sp"
-                            android:textColor="#444444" />
+                    <LinearLayout
+                        android:id="@+id/containerAlumnos"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#E5E5E5"
+                        android:padding="10dp">
                     </LinearLayout>
                 </LinearLayout>
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnVerTodosInstrumento"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/boton_gris"
+                    android:backgroundTint="#E1F5FE"
+                    android:text="Ver todos los alumnos por instrumento"
+                    android:textAllCaps="false"
+                    android:textColor="#0277BD"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
 
             </LinearLayout>
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnRegresar"
-                android:layout_width="match_parent"
-                android:layout_height="55dp"
-                android:background="@drawable/boton_gris"
-                android:backgroundTint="@null"
-                android:text="Regresar"
-                android:textAllCaps="false"
-                android:textColor="#222222" />
         </LinearLayout>
+    </ScrollView>
 
-    </LinearLayout>
-</ScrollView>
+</RelativeLayout>
