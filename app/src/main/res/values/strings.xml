@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ACADEMIAM</string>
+    <string name="toca_la_nota">Toca la nota</string>
+    <string name="escuchando">Escuchando...</string>
 </resources>

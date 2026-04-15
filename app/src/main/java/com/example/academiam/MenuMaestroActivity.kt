@@ -73,10 +73,13 @@ class MenuMaestroActivity : AppCompatActivity() {
         }
 
         btnSeleccionarLibro.setOnClickListener {
-            // Aquí iría tu actividad de selección de libros/métodos
-            Toast.makeText(this, "Selección de Libros", Toast.LENGTH_SHORT).show()
-        }
 
+            val intent = Intent(this, LibrosActivity::class.java)
+
+            intent.putExtra("TEACHER_ID", teacherId)
+
+            startActivity(intent)
+        }
         btnLogout.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

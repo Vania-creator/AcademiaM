@@ -1,8 +1,10 @@
 package com.example.academiam
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 
@@ -18,20 +20,21 @@ class LibrosActivity : AppCompatActivity() {
         val itemLibro4 = findViewById<LinearLayout>(R.id.itemLibro4)
         val btnRegresar = findViewById<AppCompatButton>(R.id.btnRegresarLibros)
 
+        // 🎯 TEMPORAL: Asignamos una nota de prueba a cada "libro"
         itemLibro1.setOnClickListener {
-            abrirLecciones("Piano Adventure 1")
+            abrirPruebaDeAudio("C")
         }
 
         itemLibro2.setOnClickListener {
-            abrirLecciones("Piano Adventure 2")
+            abrirPruebaDeAudio("D")
         }
 
         itemLibro3.setOnClickListener {
-            abrirLecciones("Piano Adventure 3")
+            abrirPruebaDeAudio("E")
         }
 
         itemLibro4.setOnClickListener {
-            abrirLecciones("Piano Adventure 4")
+            abrirPruebaDeAudio("F")
         }
 
         btnRegresar.setOnClickListener {
@@ -39,9 +42,22 @@ class LibrosActivity : AppCompatActivity() {
         }
     }
 
-    private fun abrirLecciones(nombreLibro: String) {
-        val intent = Intent(this, LeccionesActivity::class.java)
-        intent.putExtra("nombre_libro", nombreLibro)
-        startActivity(intent)
+    // 🔥 FUNCIÓN TEMPORAL: Salta directamente a la verificación de micrófono
+    private fun abrirPruebaDeAudio(notaPrueba: String) {
+        try {
+            // Cambiamos el destino a EjercicioNotasActivity
+            val intent = Intent(this, EjercicioNotasActivity::class.java)
+
+            // Mandamos "NOTA_OBJETIVO" en lugar de "nombre_libro" para que la otra pantalla lo entienda
+            intent.putExtra("NOTA_OBJETIVO", notaPrueba)
+
+            startActivity(intent)
+
+        } catch (e: ActivityNotFoundException) {
+            Toast.makeText(this, "Error: Revisa el Manifest", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error al abrir: ${e.message}", Toast.LENGTH_LONG).show()
+            e.printStackTrace()
+        }
     }
 }
