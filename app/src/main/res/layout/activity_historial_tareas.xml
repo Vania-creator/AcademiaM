@@ -3,32 +3,44 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F3F3F3">
+    android:background="#F4F0E8">
 
+    <!-- HEADER PREMIUM -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="110dp"
+        android:layout_height="180dp"
         android:background="#173548"
-        android:gravity="center_vertical"
-        android:padding="20dp">
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:background="@drawable/glow_logo_menu">
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:src="@drawable/logo"
+                android:scaleType="fitCenter"
+                android:contentDescription="Logo"/>
+
+        </FrameLayout>
 
         <TextView
             android:id="@+id/txtTituloHistorialTareas"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="Tareas de Alumno"
             android:textColor="#FFFFFF"
-            android:textSize="22sp"
-            android:textStyle="bold" />
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp"/>
 
-        <ImageView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:src="@drawable/logo"
-            android:contentDescription="Logo" />
     </LinearLayout>
 
+    <!-- LISTA -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -40,19 +52,29 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingStart="22dp"
+            android:paddingEnd="22dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp">
+
         </LinearLayout>
     </ScrollView>
 
+    <!-- BOTÓN PRO -->
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnRegresarHistorialT"
         android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:layout_margin="16dp"
-        android:background="@drawable/boton_gris"
+        android:layout_height="58dp"
+        android:layout_marginStart="22dp"
+        android:layout_marginEnd="22dp"
+        android:layout_marginBottom="18dp"
+        android:background="@drawable/boton_menu_animado"
+        android:backgroundTint="@null"
         android:text="Regresar al Perfil"
         android:textAllCaps="false"
-        android:textColor="#222222"
-        android:textStyle="bold" />
+        android:textColor="#263746"
+        android:textStyle="bold"
+        android:elevation="5dp"
+        android:stateListAnimator="@null"/>
 
 </LinearLayout>

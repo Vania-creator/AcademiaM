@@ -2,11 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#BDBDBD"
-    android:padding="12dp"
+    android:background="@drawable/card_grabacion"
+    android:elevation="4dp"
+    android:padding="14dp"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:layout_marginBottom="12dp">
+    android:layout_marginBottom="12dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground">
 
     <View
         android:layout_width="54dp"
@@ -17,7 +21,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="14dp"
         android:orientation="vertical">
 
         <TextView
@@ -25,32 +29,38 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Nombre de la Canción"
-            android:textColor="#222222"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+            android:textColor="#173548"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium" />
 
         <TextView
             android:id="@+id/txtDetallesGr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Libro / Lección"
-            android:textColor="#444444"
-            android:textSize="13sp" />
+            android:textColor="#6F655D"
+            android:textSize="13sp"
+            android:layout_marginTop="2dp" />
 
         <TextView
             android:id="@+id/txtFechaGr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Fecha de subida"
-            android:textColor="#666666"
-            android:textSize="11sp" />
+            android:textColor="#8C837B"
+            android:textSize="11sp"
+            android:layout_marginTop="2dp" />
     </LinearLayout>
 
     <ImageView
         android:id="@+id/btnPlayGr"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
         android:src="@android:drawable/ic_media_play"
         android:tint="#173548"
+        android:background="@drawable/circulo_blanco"
+        android:padding="9dp"
+        android:elevation="2dp"
         android:contentDescription="Play" />
 </LinearLayout>

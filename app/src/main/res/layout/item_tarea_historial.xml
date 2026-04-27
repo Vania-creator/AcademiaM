@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="#E5E5E5"
+    android:background="@drawable/card_alumno"
+    android:elevation="3dp"
     android:padding="14dp"
     android:layout_marginBottom="12dp">
 
@@ -14,8 +15,13 @@
         android:text="PENDIENTE"
         android:textSize="10sp"
         android:textStyle="bold"
-        android:padding="4dp"
-        android:layout_marginBottom="4dp"/>
+        android:textColor="#B3261E"
+        android:background="@drawable/etiqueta_pendiente"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:layout_marginBottom="6dp"/>
 
     <TextView
         android:id="@+id/txtTituloTareaItem"
@@ -32,7 +38,8 @@
         android:layout_height="wrap_content"
         android:text="Asignada: 2026-04-12"
         android:textSize="12sp"
-        android:textColor="#666666" />
+        android:textColor="#6F655D"
+        android:layout_marginTop="2dp" />
 
     <TextView
         android:id="@+id/txtDescTareaItem"
@@ -40,5 +47,5 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="Descripción detallada de la tarea..."
-        android:textColor="#222222" />
+        android:textColor="#263746" />
 </LinearLayout>
