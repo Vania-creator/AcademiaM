@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="#F3F3F3">
+    android:background="#F4F0E8">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -12,30 +12,46 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="220dp"
+            android:layout_height="225dp"
             android:background="#173548"
-            android:gravity="center">
-            <ImageView
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:src="@drawable/logo"
-                android:contentDescription="Logo" />
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="205dp"
+                android:layout_height="205dp"
+                android:background="@drawable/glow_logo_menu">
+
+                <ImageView
+                    android:layout_width="145dp"
+                    android:layout_height="145dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/logo"
+                    android:scaleType="fitCenter"
+                    android:contentDescription="Logo" />
+
+            </FrameLayout>
+
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:paddingStart="22dp"
+            android:paddingEnd="22dp"
+            android:paddingTop="24dp"
+            android:paddingBottom="32dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:background="#E5E5E5"
+                android:background="@drawable/card_alumno"
                 android:padding="16dp"
+                android:elevation="4dp"
                 android:gravity="top"
-                android:layout_marginBottom="18dp">
+                android:layout_marginBottom="20dp">
 
                 <View
                     android:id="@+id/imgPerfilFoto"
@@ -57,16 +73,17 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Cargando..."
-                        android:textColor="#222222"
+                        android:textColor="#173548"
                         android:textSize="18sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-medium" />
 
                     <TextView
                         android:id="@+id/txtInstrumentoPerfil"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Instrumentos"
-                        android:textColor="#173548"
+                        android:textColor="#6F655D"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -74,9 +91,9 @@
                         android:id="@+id/txtHorarioPerfil"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
+                        android:layout_marginTop="3dp"
                         android:text="Horarios..."
-                        android:textColor="#555555"
+                        android:textColor="#5A4A3F"
                         android:textSize="12sp"
                         android:lineSpacingExtra="2dp" />
 
@@ -84,9 +101,9 @@
                         android:id="@+id/txtTutorPerfil"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
+                        android:layout_marginTop="5dp"
                         android:text="Tutor: N/A"
-                        android:textColor="#757575"
+                        android:textColor="#8C837B"
                         android:textSize="11sp" />
                 </LinearLayout>
 
@@ -94,8 +111,8 @@
                     android:id="@+id/txtRachaPerfil"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0 Dias"
-                    android:textColor="#E64A19"
+                    android:text="0 Días"
+                    android:textColor="#B15C2E"
                     android:textStyle="bold"
                     android:textSize="13sp" />
             </LinearLayout>
@@ -104,8 +121,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Últimas Insignias:"
-                android:textColor="#222222"
+                android:textColor="#173548"
                 android:textSize="16sp"
+                android:textStyle="bold"
                 android:layout_marginBottom="12dp" />
 
             <LinearLayout
@@ -114,15 +132,15 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center"
-                android:layout_marginBottom="18dp">
-            </LinearLayout>
+                android:layout_marginBottom="20dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="#D8D8D8"
+                android:background="@drawable/contenedor_lista_alumnos"
                 android:padding="16dp"
+                android:elevation="3dp"
                 android:layout_marginBottom="18dp">
 
                 <LinearLayout
@@ -137,7 +155,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Tarea Pendiente:"
-                        android:textColor="#222222"
+                        android:textColor="#173548"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -155,9 +173,10 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#BDBDBD"
+                    android:background="@drawable/card_alumno"
                     android:orientation="vertical"
-                    android:padding="12dp">
+                    android:padding="12dp"
+                    android:elevation="2dp">
 
                     <TextView
                         android:id="@+id/txtStatusTareaPerfil"
@@ -166,18 +185,20 @@
                         android:text="PENDIENTE"
                         android:textSize="11sp"
                         android:textStyle="bold"
-                        android:textColor="#B71C1C"
-                        android:background="#FFCDD2"
-                        android:paddingStart="6dp"
-                        android:paddingEnd="6dp" />
+                        android:textColor="#B3261E"
+                        android:background="@drawable/etiqueta_pendiente"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:paddingTop="3dp"
+                        android:paddingBottom="3dp" />
 
                     <TextView
                         android:id="@+id/txtTareaTituloPerfil"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
+                        android:layout_marginTop="8dp"
                         android:text="Cargando tarea..."
-                        android:textColor="#222222"
+                        android:textColor="#173548"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -185,9 +206,9 @@
                         android:id="@+id/txtTareaDesc"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
+                        android:layout_marginTop="3dp"
                         android:text="No hay tareas asignadas"
-                        android:textColor="#444444"
+                        android:textColor="#5A4A3F"
                         android:textSize="14sp" />
                 </LinearLayout>
             </LinearLayout>
@@ -196,8 +217,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="#D8D8D8"
+                android:background="@drawable/contenedor_lista_alumnos"
                 android:padding="16dp"
+                android:elevation="3dp"
                 android:layout_marginBottom="22dp">
 
                 <LinearLayout
@@ -212,7 +234,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Último Reporte:"
-                        android:textColor="#222222"
+                        android:textColor="#173548"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -230,9 +252,10 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#BDBDBD"
+                    android:background="@drawable/card_alumno"
                     android:orientation="vertical"
-                    android:padding="12dp">
+                    android:padding="12dp"
+                    android:elevation="2dp">
 
                     <TextView
                         android:id="@+id/txtFechaReportePerfil"
@@ -241,15 +264,15 @@
                         android:text="Fecha: --"
                         android:textSize="12sp"
                         android:textStyle="italic"
-                        android:textColor="#444444" />
+                        android:textColor="#6F655D" />
 
                     <TextView
                         android:id="@+id/txtReporteDesc"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
+                        android:layout_marginTop="5dp"
                         android:text="No hay reportes recientes"
-                        android:textColor="#222222"
+                        android:textColor="#173548"
                         android:textSize="15sp" />
                 </LinearLayout>
             </LinearLayout>
@@ -262,26 +285,32 @@
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnRegresarPerfil"
                     android:layout_width="0dp"
-                    android:layout_height="55dp"
+                    android:layout_height="56dp"
                     android:layout_weight="1"
-                    android:layout_marginEnd="10dp"
-                    android:background="@drawable/boton_gris"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/boton_menu_animado"
                     android:backgroundTint="@null"
                     android:text="Regresar"
                     android:textAllCaps="false"
-                    android:textColor="#222222" />
+                    android:textColor="#263746"
+                    android:textStyle="bold"
+                    android:elevation="5dp"
+                    android:stateListAnimator="@null" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnGrabaciones"
                     android:layout_width="0dp"
-                    android:layout_height="55dp"
+                    android:layout_height="56dp"
                     android:layout_weight="1"
-                    android:layout_marginStart="10dp"
-                    android:background="@drawable/boton_gris"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/boton_menu_animado"
                     android:backgroundTint="@null"
                     android:text="Grabaciones"
                     android:textAllCaps="false"
-                    android:textColor="#222222" />
+                    android:textColor="#263746"
+                    android:textStyle="bold"
+                    android:elevation="5dp"
+                    android:stateListAnimator="@null" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

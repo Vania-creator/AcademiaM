@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F3F3F3"
+    android:background="#F4F0E8"
     android:fillViewport="true">
 
     <LinearLayout
@@ -17,54 +17,63 @@
             android:gravity="center"
             android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/imgLogoSuperior"
-                android:layout_width="140dp"
-                android:layout_height="140dp"
-                android:contentDescription="Logo superior"
-                android:scaleType="fitCenter"
-                android:src="@drawable/logo" />
+            <FrameLayout
+                android:layout_width="210dp"
+                android:layout_height="210dp"
+                android:background="@drawable/glow_logo_menu">
+
+                <ImageView
+                    android:id="@+id/imgLogoSuperior"
+                    android:layout_width="145dp"
+                    android:layout_height="145dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/logo"
+                    android:scaleType="fitCenter" />
+
+            </FrameLayout>
+
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#F3F3F3"
+            android:background="#F4F0E8"
             android:orientation="vertical"
-            android:paddingStart="16dp"
-            android:paddingTop="22dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="30dp">
+            android:paddingStart="22dp"
+            android:paddingTop="24dp"
+            android:paddingEnd="22dp"
+            android:paddingBottom="32dp">
 
+            <!-- PERFIL -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="18dp"
+                android:layout_marginBottom="22dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/imgPerfil"
-                    android:layout_width="82dp"
-                    android:layout_height="82dp"
+                    android:layout_width="78dp"
+                    android:layout_height="78dp"
                     android:background="@drawable/circulo_gris"
                     android:contentDescription="Perfil"
                     android:padding="18dp"
                     android:scaleType="centerInside"
                     android:src="@android:drawable/ic_menu_edit"
-                    android:tint="#000000" />
+                    android:tint="#6F655D" />
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
 
                     <TextView
                         android:id="@+id/txtNombre"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Vania Lima"
+                        android:text="Cesar Jauregui"
                         android:textColor="#263746"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -74,119 +83,118 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Batería"
-                        android:textColor="#B8B8B8"
+                        android:text="Canto, Piano, Batería, Violín, Guitarra\nEléctrica, Guitarra Acústica, Bajo, Ukulele"
+                        android:textColor="#8C837B"
                         android:textSize="14sp" />
                 </LinearLayout>
             </LinearLayout>
 
+            <!-- 🔥 BOTONES CON ANIMACIÓN -->
+
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnMisAlumnos"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginStart="14dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="14dp"
-                android:background="@drawable/boton_gris"
+                android:layout_height="64dp"
+                android:layout_marginBottom="14dp"
+                android:background="@drawable/boton_menu_animado"
                 android:backgroundTint="@null"
                 android:elevation="5dp"
+                android:stateListAnimator="@null"
                 android:text="Mis Alumnos"
                 android:textAllCaps="false"
-                android:textColor="#222222"
-                android:textSize="14sp" />
-
+                android:textColor="#263746"
+                android:textSize="17sp"
+                android:gravity="center" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnHorario"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginStart="14dp"
-                android:layout_marginTop="18dp"
-                android:layout_marginEnd="14dp"
-                android:background="@drawable/boton_gris"
+                android:layout_height="64dp"
+                android:layout_marginBottom="14dp"
+                android:background="@drawable/boton_menu_animado"
                 android:backgroundTint="@null"
                 android:elevation="5dp"
+                android:stateListAnimator="@null"
                 android:text="Horario"
                 android:textAllCaps="false"
-                android:textColor="#222222"
-                android:textSize="14sp" />
+                android:textColor="#263746"
+                android:textSize="17sp"
+                android:gravity="center" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnReporteClase"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginStart="14dp"
-                android:layout_marginTop="18dp"
-                android:layout_marginEnd="14dp"
-                android:background="@drawable/boton_gris"
+                android:layout_height="64dp"
+                android:layout_marginBottom="14dp"
+                android:background="@drawable/boton_menu_animado"
                 android:backgroundTint="@null"
                 android:elevation="5dp"
+                android:stateListAnimator="@null"
                 android:text="Reporte de Clase"
                 android:textAllCaps="false"
-                android:textColor="#222222"
-                android:textSize="14sp" />
+                android:textColor="#263746"
+                android:textSize="17sp"
+                android:gravity="center" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnAsignarRecompensa"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginStart="14dp"
-                android:layout_marginTop="18dp"
-                android:layout_marginEnd="14dp"
-                android:background="@drawable/boton_gris"
+                android:layout_height="64dp"
+                android:layout_marginBottom="14dp"
+                android:background="@drawable/boton_menu_animado"
                 android:backgroundTint="@null"
                 android:elevation="5dp"
+                android:stateListAnimator="@null"
                 android:text="Asignar Recompensa"
                 android:textAllCaps="false"
-                android:textColor="#222222"
-                android:textSize="14sp" />
+                android:textColor="#263746"
+                android:textSize="17sp"
+                android:gravity="center" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnTarea"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginStart="14dp"
-                android:layout_marginTop="18dp"
-                android:layout_marginEnd="14dp"
-                android:background="@drawable/boton_gris"
+                android:layout_height="64dp"
+                android:layout_marginBottom="14dp"
+                android:background="@drawable/boton_menu_animado"
                 android:backgroundTint="@null"
                 android:elevation="5dp"
+                android:stateListAnimator="@null"
                 android:text="Dejar Tarea"
                 android:textAllCaps="false"
-                android:textColor="#222222"
-                android:textSize="14sp" />
+                android:textColor="#263746"
+                android:textSize="17sp"
+                android:gravity="center" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnSeleccionarLibro"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginStart="14dp"
-                android:layout_marginTop="18dp"
-                android:layout_marginEnd="14dp"
-                android:background="@drawable/boton_gris"
+                android:layout_height="64dp"
+                android:layout_marginBottom="22dp"
+                android:background="@drawable/boton_menu_animado"
                 android:backgroundTint="@null"
                 android:elevation="5dp"
+                android:stateListAnimator="@null"
                 android:text="Seleccionar Libro"
                 android:textAllCaps="false"
-                android:textColor="#222222"
-                android:textSize="14sp" />
+                android:textColor="#263746"
+                android:textSize="17sp"
+                android:gravity="center" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnLogout"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginStart="14dp"
-                android:layout_marginTop="30dp"
-                android:layout_marginEnd="14dp"
-                android:layout_marginBottom="20dp"
-                android:background="@drawable/boton_gris"
-                android:backgroundTint="#FFEBEE"
-                android:elevation="5dp"
+                android:layout_height="60dp"
+                android:background="@drawable/boton_logout"
+                android:backgroundTint="@null"
+                android:elevation="4dp"
                 android:text="Cerrar Sesión"
                 android:textAllCaps="false"
-                android:textColor="#C62828"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:textColor="#B3261E"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:gravity="center" />
+
         </LinearLayout>
 
     </LinearLayout>

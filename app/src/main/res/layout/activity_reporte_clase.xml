@@ -3,32 +3,51 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="#F3F3F3">
+    android:background="#F4F0E8">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="130dp"
-            android:background="#173548"
-            android:gravity="center_vertical"
-            android:padding="20dp">
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Generar Reporte"
-                android:textColor="#FFFFFF"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-            <ImageView
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:src="@drawable/logo" />
-        </LinearLayout>
+            android:layout_height="150dp"
+            android:background="#173548">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/glow_reporte"
+                android:alpha="0.45" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:paddingStart="22dp"
+                android:paddingEnd="22dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Generar Reporte"
+                    android:textColor="#FFFFFF"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-medium" />
+
+                <ImageView
+                    android:layout_width="82dp"
+                    android:layout_height="82dp"
+                    android:src="@drawable/logo"
+                    android:scaleType="fitCenter" />
+            </LinearLayout>
+
+        </FrameLayout>
+
         <TextView
             android:id="@+id/txtErrorReporte"
             android:layout_width="match_parent"
@@ -46,45 +65,57 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:paddingStart="22dp"
+            android:paddingEnd="22dp"
+            android:paddingTop="24dp"
+            android:paddingBottom="32dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="1. Selecciona la Fecha"
-                android:textColor="#111111"
+                android:textColor="#173548"
                 android:textStyle="bold"
+                android:textSize="15sp"
                 android:layout_marginBottom="8dp" />
+
             <TextView
                 android:id="@+id/btnSeleccionarFecha"
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
-                android:background="@drawable/campo_redondo"
+                android:layout_height="56dp"
+                android:background="@drawable/campo_busqueda"
                 android:drawableStart="@android:drawable/ic_menu_my_calendar"
                 android:drawablePadding="12dp"
                 android:gravity="center_vertical"
                 android:paddingStart="18dp"
+                android:paddingEnd="18dp"
                 android:text="Toca para elegir fecha..."
-                android:textColor="#222222"
-                android:layout_marginBottom="18dp" />
+                android:textColor="#5A4A3F"
+                android:textSize="14sp"
+                android:elevation="3dp"
+                android:layout_marginBottom="20dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="2. Alumno y Clase"
-                android:textColor="#111111"
+                android:textColor="#173548"
                 android:textStyle="bold"
+                android:textSize="15sp"
                 android:layout_marginBottom="8dp" />
+
             <TextView
                 android:id="@+id/btnSeleccionarAlumno"
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
-                android:background="@drawable/campo_redondo"
-                android:backgroundTint="#EEEEEE"
+                android:layout_height="56dp"
+                android:background="@drawable/campo_reporte_disabled"
                 android:gravity="center_vertical"
                 android:paddingStart="18dp"
+                android:paddingEnd="18dp"
                 android:text="Esperando fecha..."
-                android:textColor="#888888"
+                android:textColor="#8C837B"
+                android:textSize="14sp"
+                android:elevation="2dp"
                 android:layout_marginBottom="18dp" />
 
             <LinearLayout
@@ -99,20 +130,24 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
-                    android:layout_marginEnd="5dp">
+                    android:layout_marginEnd="6dp">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Tipo Detectado"
-                        android:textSize="12sp" />
+                        android:textColor="#6F655D"
+                        android:textSize="12sp"
+                        android:layout_marginBottom="4dp" />
+
                     <TextView
                         android:id="@+id/txtTipoClaseAuto"
                         android:layout_width="match_parent"
-                        android:layout_height="45dp"
-                        android:background="#E0E0E0"
+                        android:layout_height="48dp"
+                        android:background="@drawable/campo_reporte_info"
                         android:gravity="center"
                         android:text="--"
-                        android:textColor="#444444"
+                        android:textColor="#263746"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -121,132 +156,187 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
-                    android:layout_marginStart="5dp">
+                    android:layout_marginStart="6dp">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Instrumento"
-                        android:textSize="12sp" />
+                        android:textColor="#6F655D"
+                        android:textSize="12sp"
+                        android:layout_marginBottom="4dp" />
+
                     <TextView
                         android:id="@+id/txtInstrumentoAuto"
                         android:layout_width="match_parent"
-                        android:layout_height="45dp"
-                        android:background="#E0E0E0"
+                        android:layout_height="48dp"
+                        android:background="@drawable/campo_reporte_info"
                         android:gravity="center"
                         android:text="--"
-                        android:textColor="#444444"
+                        android:textColor="#263746"
                         android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <CheckBox
+                android:id="@+id/cbAsistio"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginBottom="18dp">
+                android:text="El alumno asistió a clase"
+                android:textSize="16sp"
+                android:textColor="#263746"
+                android:buttonTint="#173548" />
 
-                <CheckBox
-                    android:id="@+id/cbAsistio"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="El alumno asistió a clase"
-                    android:textSize="16sp"
-                    android:buttonTint="#173548" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="* Si el alumno NO asistió, no es necesario llenar el cuadro de estudio ni notas."
-                    android:textColor="#D32F2F"
-                    android:textSize="12sp"
-                    android:paddingStart="32dp"
-                    android:textStyle="italic" />
-            </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="* Si el alumno NO asistió, no es necesario llenar el cuadro de estudio ni notas."
+                android:textColor="#B3261E"
+                android:textSize="12sp"
+                android:paddingStart="32dp"
+                android:textStyle="italic"
+                android:layout_marginBottom="20dp" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="#CCCCCC"
-                android:layout_marginBottom="18dp" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#CCCCCC"
-                android:layout_marginBottom="18dp" />
+                android:background="#D8D0C6"
+                android:layout_marginBottom="20dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="¿Cuánto estudió en la semana?"
-                android:textColor="#111111"
+                android:textColor="#173548"
+                android:textStyle="bold"
                 android:layout_marginBottom="8dp" />
+
             <EditText
                 android:id="@+id/etCuantoEstudio"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@drawable/campo_redondo"
+                android:layout_height="54dp"
+                android:background="@drawable/campo_busqueda"
                 android:hint="Ej. 3 horas, poco, mucho..."
-                android:paddingStart="15dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
                 android:textSize="14sp"
+                android:textColor="#263746"
+                android:textColorHint="#9A9188"
+                android:elevation="2dp"
                 android:layout_marginBottom="18dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Observaciones de la clase"
-                android:textColor="#111111"
+                android:textColor="#173548"
+                android:textStyle="bold"
                 android:layout_marginBottom="8dp" />
+
             <EditText
                 android:id="@+id/etNotasClase"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:background="@drawable/campo_redondo"
+                android:layout_height="105dp"
+                android:background="@drawable/campo_busqueda"
                 android:gravity="top"
                 android:padding="15dp"
                 android:hint="Temas vistos, avances o pendientes..."
                 android:textSize="14sp"
-                android:layout_marginBottom="20dp" />
+                android:textColor="#263746"
+                android:textColorHint="#9A9188"
+                android:elevation="2dp"
+                android:layout_marginBottom="22dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Insignia de Motivación (Opcional)"
+                android:textColor="#173548"
                 android:textStyle="bold"
                 android:layout_marginBottom="12dp" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center"
-                android:layout_marginBottom="25dp">
-                <ImageView android:id="@+id/imgInsignia1" android:layout_width="50dp" android:layout_height="50dp" android:src="@drawable/logo" android:alpha="0.4" android:layout_margin="8dp" android:background="@drawable/circulo_gris" />
-                <ImageView android:id="@+id/imgInsignia2" android:layout_width="50dp" android:layout_height="50dp" android:src="@drawable/logo" android:alpha="0.4" android:layout_margin="8dp" android:background="@drawable/circulo_gris" />
-                <ImageView android:id="@+id/imgInsignia3" android:layout_width="50dp" android:layout_height="50dp" android:src="@drawable/logo" android:alpha="0.4" android:layout_margin="8dp" android:background="@drawable/circulo_gris" />
-                <ImageView android:id="@+id/imgInsignia4" android:layout_width="50dp" android:layout_height="50dp" android:src="@drawable/logo" android:alpha="0.4" android:layout_margin="8dp" android:background="@drawable/circulo_gris" />
+                android:layout_marginBottom="26dp">
+
+                <ImageView
+                    android:id="@+id/imgInsignia1"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:src="@drawable/logo"
+                    android:alpha="0.45"
+                    android:padding="8dp"
+                    android:layout_margin="7dp"
+                    android:background="@drawable/circulo_gris" />
+
+                <ImageView
+                    android:id="@+id/imgInsignia2"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:src="@drawable/logo"
+                    android:alpha="0.45"
+                    android:padding="8dp"
+                    android:layout_margin="7dp"
+                    android:background="@drawable/circulo_gris" />
+
+                <ImageView
+                    android:id="@+id/imgInsignia3"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:src="@drawable/logo"
+                    android:alpha="0.45"
+                    android:padding="8dp"
+                    android:layout_margin="7dp"
+                    android:background="@drawable/circulo_gris" />
+
+                <ImageView
+                    android:id="@+id/imgInsignia4"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:src="@drawable/logo"
+                    android:alpha="0.45"
+                    android:padding="8dp"
+                    android:layout_margin="7dp"
+                    android:background="@drawable/circulo_gris" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
+
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnRegresarReporte"
                     android:layout_width="0dp"
-                    android:layout_height="55dp"
+                    android:layout_height="56dp"
                     android:layout_weight="1"
                     android:layout_marginEnd="8dp"
-                    android:background="@drawable/boton_gris"
-                    android:text="Cancelar" />
+                    android:background="@drawable/boton_menu_animado"
+                    android:backgroundTint="@null"
+                    android:text="Cancelar"
+                    android:textAllCaps="false"
+                    android:textColor="#263746"
+                    android:textStyle="bold"
+                    android:elevation="5dp"
+                    android:stateListAnimator="@null" />
+
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnIngresarReporte"
                     android:layout_width="0dp"
-                    android:layout_height="55dp"
-                    android:layout_weight="1.2"
-                    android:background="@drawable/boton_gris"
-                    android:backgroundTint="#173548"
+                    android:layout_height="56dp"
+                    android:layout_weight="1.25"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/boton_login"
+                    android:backgroundTint="@null"
                     android:text="Guardar Reporte"
-                    android:textColor="#FFFFFF" />
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:elevation="6dp"
+                    android:stateListAnimator="@null" />
             </LinearLayout>
         </LinearLayout>
 

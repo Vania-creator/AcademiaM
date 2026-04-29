@@ -9,16 +9,22 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+        maven("https://jitpack.io") // 🔥 también aquí
     }
 }
+
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS) // 🔥 CAMBIO
     repositories {
         google()
         mavenCentral()
+        maven("https://jitpack.io") // 🔥 correcto
     }
 }
 
 rootProject.name = "ACADEMIAM"
 include(":app")
- 

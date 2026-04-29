@@ -3,9 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="#E5E5E5"
+    android:background="@drawable/card_alumno"
+    android:elevation="3dp"
     android:padding="14dp"
-    android:layout_marginBottom="12dp">
+    android:layout_marginBottom="12dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground">
 
     <TextView
         android:id="@+id/txtFechaItem"
@@ -13,7 +17,8 @@
         android:layout_height="wrap_content"
         android:text="2026-04-12 (Fija)"
         android:textStyle="bold"
-        android:textColor="#173548" />
+        android:textColor="#173548"
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/txtAsistenciaItem"
@@ -21,13 +26,17 @@
         android:layout_height="wrap_content"
         android:text="Asistió"
         android:textSize="12sp"
-        android:textColor="#555555" />
+        android:textColor="#6F655D"
+        android:layout_marginTop="3dp" />
 
     <TextView
         android:id="@+id/txtContenidoItem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
+        android:layout_marginTop="7dp"
         android:text="Notas de la clase..."
-        android:textColor="#222222" />
+        android:textColor="#263746"
+        android:textSize="14sp"
+        android:lineSpacingExtra="2dp" />
+
 </LinearLayout>

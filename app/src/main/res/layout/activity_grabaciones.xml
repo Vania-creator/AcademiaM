@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="#F3F3F3">
+    android:background="#F4F0E8">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -12,65 +12,111 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="180dp"
+            android:layout_height="225dp"
             android:background="#173548"
-            android:gravity="center">
-            <ImageView
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:src="@drawable/logo" />
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="205dp"
+                android:layout_height="205dp"
+                android:background="@drawable/glow_logo_menu">
+
+                <ImageView
+                    android:layout_width="145dp"
+                    android:layout_height="145dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/logo"
+                    android:scaleType="fitCenter"
+                    android:contentDescription="Logo" />
+
+            </FrameLayout>
+
         </LinearLayout>
 
         <TextView
             android:id="@+id/txtErrorCarga"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:background="#FFCDD2"
+            android:layout_marginStart="22dp"
+            android:layout_marginEnd="22dp"
+            android:layout_marginTop="18dp"
+            android:background="@drawable/error_rojo"
             android:gravity="center"
-            android:padding="10dp"
+            android:padding="12dp"
             android:text="Error"
             android:textColor="#B71C1C"
+            android:textStyle="bold"
             android:visibility="gone" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:paddingStart="22dp"
+            android:paddingEnd="22dp"
+            android:paddingTop="24dp"
+            android:paddingBottom="32dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#E5E5E5"
+                android:background="@drawable/card_alumno"
+                android:elevation="4dp"
                 android:padding="16dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:layout_marginBottom="12dp">
+                android:layout_marginBottom="20dp">
 
                 <View
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
                     android:background="@drawable/circulo_gris" />
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginStart="12dp"
+                    android:layout_marginStart="14dp"
                     android:orientation="vertical">
-                    <TextView android:id="@+id/txtNombreGr" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Cargando..." android:textColor="#222222" android:textStyle="bold" android:textSize="17sp" />
-                    <TextView android:id="@+id/txtInstrumentoGr" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--" />
+
+                    <TextView
+                        android:id="@+id/txtNombreGr"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Cargando..."
+                        android:textColor="#173548"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <TextView
+                        android:id="@+id/txtInstrumentoGr"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="--"
+                        android:textColor="#6F655D"
+                        android:textSize="14sp"
+                        android:layout_marginTop="2dp" />
                 </LinearLayout>
 
-                <TextView android:id="@+id/txtRachaGr" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0 Días" android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/txtRachaGr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0 Días"
+                    android:textColor="#B15C2E"
+                    android:textStyle="bold"
+                    android:textSize="13sp" />
             </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Grabaciones de clase:"
+                android:textColor="#173548"
                 android:textStyle="bold"
+                android:textSize="16sp"
                 android:layout_marginBottom="12dp" />
 
             <LinearLayout
@@ -78,33 +124,46 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:minHeight="100dp"
-                android:background="#D8D8D8"
-                android:padding="14dp"
-                android:layout_marginBottom="24dp">
-            </LinearLayout>
+                android:minHeight="120dp"
+                android:background="@drawable/contenedor_lista_alumnos"
+                android:elevation="3dp"
+                android:padding="12dp"
+                android:layout_marginBottom="24dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
+
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnRegresarGrabaciones"
                     android:layout_width="0dp"
-                    android:layout_height="55dp"
+                    android:layout_height="58dp"
                     android:layout_weight="1"
-                    android:layout_marginEnd="10dp"
-                    android:background="@drawable/boton_gris"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/boton_menu_animado"
+                    android:backgroundTint="@null"
                     android:text="Regresar"
-                    android:textAllCaps="false" />
+                    android:textAllCaps="false"
+                    android:textColor="#263746"
+                    android:textStyle="bold"
+                    android:elevation="5dp"
+                    android:stateListAnimator="@null" />
+
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnRecompensa"
                     android:layout_width="0dp"
-                    android:layout_height="55dp"
+                    android:layout_height="58dp"
                     android:layout_weight="1"
-                    android:background="@drawable/boton_gris"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/boton_menu_animado"
+                    android:backgroundTint="@null"
                     android:text="Recompensa"
-                    android:textAllCaps="false" />
+                    android:textAllCaps="false"
+                    android:textColor="#263746"
+                    android:textStyle="bold"
+                    android:elevation="5dp"
+                    android:stateListAnimator="@null" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

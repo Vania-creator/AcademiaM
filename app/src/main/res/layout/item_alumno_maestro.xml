@@ -2,19 +2,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/boton_gris"
-    android:backgroundTint="#FFFFFF"
-    android:elevation="2dp"
+    android:background="@drawable/card_alumno"
+    android:elevation="4dp"
     android:layout_marginBottom="12dp"
-    android:padding="15dp"
+    android:paddingStart="14dp"
+    android:paddingEnd="14dp"
+    android:paddingTop="12dp"
+    android:paddingBottom="12dp"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:clickable="true"
     android:focusable="true">
 
     <View
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
         android:background="@drawable/circulo_gris" />
 
     <LinearLayout
@@ -31,15 +33,17 @@
             android:text="Nombre Alumno"
             android:textColor="#173548"
             android:textSize="17sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium" />
 
         <TextView
             android:id="@+id/txtInstrumentoAlumno"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Instrumento"
-            android:textColor="#666666"
-            android:textSize="14sp" />
+            android:textColor="#8C837B"
+            android:textSize="14sp"
+            android:layout_marginTop="2dp" />
     </LinearLayout>
 
     <LinearLayout
@@ -53,7 +57,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="🔥 0 Días"
-            android:textColor="#E64A19"
+            android:textColor="#B15C2E"
             android:textStyle="bold"
             android:textSize="14sp" />
 
@@ -62,6 +66,7 @@
             android:layout_height="wrap_content"
             android:text="Racha"
             android:textSize="11sp"
-            android:textColor="#B8B8B8" />
+            android:textColor="#B8AEA5" />
     </LinearLayout>
+
 </LinearLayout>
