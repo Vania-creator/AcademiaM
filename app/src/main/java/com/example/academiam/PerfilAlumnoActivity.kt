@@ -94,7 +94,7 @@ class PerfilAlumnoActivity : AppCompatActivity() {
                     txtHorario.text = "Sin clases registradas"
                 }
             }
-        // 3. REPORTES E INSIGNIAS (ÚNICAS)
+// 3. REPORTES E INSIGNIAS (ÚNICAS CON IMÁGENES Y NOMBRES)
         db.collection("reports")
             .whereEqualTo("studentId", id)
             .orderBy("date", Query.Direction.DESCENDING)
@@ -117,13 +117,36 @@ class PerfilAlumnoActivity : AppCompatActivity() {
                     }
 
                     for (nombreInsignia in insigniasGanadas) {
+                        // 1. Creamos el contenedor para la imagen
                         val img = ImageView(this)
                         val params = LinearLayout.LayoutParams(110, 110)
                         params.setMargins(8, 0, 8, 0)
                         img.layoutParams = params
-                        img.setImageResource(R.drawable.logo)
+
+                        // 2. Lógica para asignar una imagen diferente según el nombre
+                        val iconoAsignado = when (nombreInsignia) {
+                            "Súper Práctica" -> android.R.drawable.btn_star_big_on // Estrella brillante
+                            "Oído de Oro" -> android.R.drawable.ic_media_play // Un play (música)
+                            "Ritmo Perfecto" -> android.R.drawable.ic_menu_compass // Brújula (precisión)
+                            "Gran Avance" -> android.R.drawable.ic_menu_upload // Flecha arriba
+                            "As de Escalas" -> android.R.drawable.ic_menu_sort_by_size // Escalones
+                            "Creatividad" -> android.R.drawable.ic_menu_gallery // Galería/Arte
+                            "Puntualidad" -> android.R.drawable.ic_menu_recent_history // Relojito
+                            "Dedos Rápidos" -> android.R.drawable.ic_menu_send // Avión de papel (rapidez)
+                            "Teoría Master" -> android.R.drawable.ic_menu_agenda // Libro/Agenda
+                            else -> R.drawable.logo // Por defecto tu logo
+                        }
+
+                        img.setImageResource(iconoAsignado)
                         img.setBackgroundResource(R.drawable.circulo_gris)
-                        img.setPadding(10, 10, 10, 10)
+                        img.setPadding(15, 15, 15, 15)
+
+                        // 3. Agregamos el "Click" para que diga su nombre
+                        img.setOnClickListener {
+                            Toast.makeText(this, "Insignia: $nombreInsignia", Toast.LENGTH_SHORT).show()
+                        }
+
+                        // 4. Lo añadimos a la pantalla
                         containerInsignias.addView(img)
                     }
                 } else {

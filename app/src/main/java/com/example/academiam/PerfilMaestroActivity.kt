@@ -2,7 +2,6 @@ package com.example.academiam
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.chip.Chip
@@ -17,10 +16,9 @@ class PerfilMaestroActivity : AppCompatActivity() {
     private var teacherId: String = ""
 
     // Listas para manejar los datos localmente (como en tu JS)
-    private var todasLasClases = mutableListOf<Map<String, Any>>()
     private var historialFiltrado = mutableListOf<Map<String, Any>>()
 
-    // Paginación local
+    // Variables de paginación
     private var paginaActual = 1
     private val filasPorPagina = 10
 
@@ -35,15 +33,18 @@ class PerfilMaestroActivity : AppCompatActivity() {
             cargarYProcesarClases()
         }
 
-        // Botones de paginación
-        findViewById<ImageButton>(R.id.btnAntHistorial).setOnClickListener {
+        // Configuración de botones de paginación
+        val btnAnt = findViewById<ImageButton>(R.id.btnAntHistorial)
+        val btnSig = findViewById<ImageButton>(R.id.btnSigHistorial)
+
+        btnAnt.setOnClickListener {
             if (paginaActual > 1) {
                 paginaActual--
                 renderizarTablaHistorial()
             }
         }
 
-        findViewById<ImageButton>(R.id.btnSigHistorial).setOnClickListener {
+        btnSig.setOnClickListener {
             val totalPaginas = Math.ceil(historialFiltrado.size.toDouble() / filasPorPagina).toInt()
             if (paginaActual < totalPaginas) {
                 paginaActual++
@@ -59,29 +60,33 @@ class PerfilMaestroActivity : AppCompatActivity() {
             if (doc.exists()) {
                 findViewById<TextView>(R.id.txtNombreMaestro).text = doc.getString("nombre")
                 findViewById<TextView>(R.id.txtUsuarioMaestro).text = "User: ${doc.getString("usuario")}"
+                findViewById<TextView>(R.id.txtStatusMaestro).text = (doc.getString("status") ?: "ACTIVO").uppercase()
 
-                // Cargar Especialidades
+                // Cargar Chips de Especialidades
                 val instrumentos = doc.get("instrumentos") as? List<String>
                 val chipGroup = findViewById<ChipGroup>(R.id.groupEspecialidades)
+                chipGroup.removeAllViews()
                 instrumentos?.forEach { nombre ->
                     val chip = Chip(this)
                     chip.text = nombre
                     chipGroup.addView(chip)
                 }
 
-                // Cargar Días
+                // Cargar Burbujas de Días
                 val dias = doc.get("diasDisponibles") as? List<String>
                 val containerDias = findViewById<LinearLayout>(R.id.containerDias)
+                containerDias.removeAllViews()
                 dias?.forEach { dia ->
                     val tv = TextView(this)
                     tv.text = dia
-                    tv.setPadding(20, 10, 20, 10)
-                    tv.setBackgroundResource(R.drawable.circulo_negro_dia)
+                    tv.setPadding(0, 0, 0, 0)
+                    tv.setBackgroundResource(R.drawable.circulo_negro_dia) // Tu drawable circular
                     tv.setTextColor(android.graphics.Color.WHITE)
+                    tv.gravity = android.view.Gravity.CENTER
+
                     val params = LinearLayout.LayoutParams(90, 90)
                     params.setMargins(0, 0, 15, 0)
                     tv.layoutParams = params
-                    tv.gravity = android.view.Gravity.CENTER
                     containerDias.addView(tv)
                 }
             }
@@ -95,7 +100,6 @@ class PerfilMaestroActivity : AppCompatActivity() {
             .whereEqualTo("teacherId", teacherId)
             .get()
             .addOnSuccessListener { query ->
-                todasLasClases.clear()
                 historialFiltrado.clear()
 
                 var fijos = 0
@@ -108,7 +112,7 @@ class PerfilMaestroActivity : AppCompatActivity() {
                     val fecha = data["date"] as? String ?: ""
                     val fechaFin = data["fechaFin"] as? String ?: ""
 
-                    // 1. Lógica de Estadísticas (Igual a tu JS)
+                    // 1. Lógica de Estadísticas (Espejo de la web)
                     if (tipo == "fija") {
                         if (fechaFin.isEmpty() || fechaFin >= todayStr) fijos++
                     } else if (tipo == "muestra") {
@@ -116,20 +120,22 @@ class PerfilMaestroActivity : AppCompatActivity() {
                         else muestrasFuturas++
                     }
 
-                    // 2. Filtro para el Historial (Excluir fijas)
+                    // 2. Filtro para el Historial (Excluir clases fijas activas)
                     if (tipo != "fija") {
                         historialFiltrado.add(data)
                     }
                 }
 
-                // Actualizar números en pantalla
+                // Actualizar contadores en la UI
                 findViewById<TextView>(R.id.statAlumnos).text = fijos.toString()
                 findViewById<TextView>(R.id.statPendientes).text = muestrasFuturas.toString()
                 findViewById<TextView>(R.id.statPasadas).text = muestrasPasadas.toString()
 
-                // Ordenar historial por fecha (Descendente)
+                // --- ORDENAMIENTO POR FECHA (MÁS RECIENTE ARRIBA) ---
                 historialFiltrado.sortByDescending { it["date"] as? String ?: "" }
 
+                // Iniciar renderizado
+                paginaActual = 1
                 renderizarTablaHistorial()
             }
     }
@@ -141,21 +147,26 @@ class PerfilMaestroActivity : AppCompatActivity() {
 
         if (historialFiltrado.isEmpty()) {
             val empty = TextView(this)
-            empty.text = "No hay clases registradas en el historial."
-            empty.setPadding(0, 20, 0, 20)
+            empty.text = "Sin registros históricos."
             empty.gravity = android.view.Gravity.CENTER
+            empty.setPadding(0, 50, 0, 50)
             container.addView(empty)
+            txtPagina.text = "Página 0 de 0"
             return
         }
 
-        // Paginación manual
+        // Cálculo de sub-lista para paginación
+        val totalItems = historialFiltrado.size
+        val totalPaginas = Math.ceil(totalItems.toDouble() / filasPorPagina).toInt()
+
         val inicio = (paginaActual - 1) * filasPorPagina
         var fin = inicio + filasPorPagina
-        if (fin > historialFiltrado.size) fin = historialFiltrado.size
+        if (fin > totalItems) fin = totalItems
 
         val subLista = historialFiltrado.subList(inicio, fin)
-        txtPagina.text = "Página $paginaActual"
+        txtPagina.text = "Página $paginaActual de $totalPaginas"
 
+        // Inflar cada fila del historial
         for (clase in subLista) {
             val view = LayoutInflater.from(this).inflate(R.layout.item_historial_maestro, container, false)
 
@@ -167,11 +178,20 @@ class PerfilMaestroActivity : AppCompatActivity() {
             val tvTipo = view.findViewById<TextView>(R.id.histTipo)
             tvTipo.text = tipo
 
-            // Colores por tipo
+            // Colores dinámicos para los badges
             when(tipo.lowercase()) {
-                "muestra" -> tvTipo.setBackgroundColor(android.graphics.Color.parseColor("#7B1FA2"))
-                "unica" -> tvTipo.setBackgroundColor(android.graphics.Color.parseColor("#1976D2"))
-                else -> tvTipo.setBackgroundColor(android.graphics.Color.parseColor("#757575"))
+                "muestra" -> {
+                    tvTipo.setBackgroundColor(android.graphics.Color.parseColor("#7B1FA2")) // Morado
+                    tvTipo.setTextColor(android.graphics.Color.WHITE)
+                }
+                "unica" -> {
+                    tvTipo.setBackgroundColor(android.graphics.Color.parseColor("#1976D2")) // Azul
+                    tvTipo.setTextColor(android.graphics.Color.WHITE)
+                }
+                else -> {
+                    tvTipo.setBackgroundColor(android.graphics.Color.parseColor("#EEEEEE")) // Gris
+                    tvTipo.setTextColor(android.graphics.Color.BLACK)
+                }
             }
 
             container.addView(view)

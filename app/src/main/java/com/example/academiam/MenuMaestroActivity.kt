@@ -62,7 +62,9 @@ class MenuMaestroActivity : AppCompatActivity() {
         }
 
         btnAsignarRecompensa.setOnClickListener {
-            // Aquí puedes mandarlo a una actividad de recompensas o al mismo Perfil del Alumno
+            val intent = Intent(this, AsignarRecompensaActivity::class.java)
+            intent.putExtra("TEACHER_ID", teacherId)
+            startActivity(intent)
             Toast.makeText(this, "Módulo de Recompensas", Toast.LENGTH_SHORT).show()
         }
 
@@ -73,7 +75,9 @@ class MenuMaestroActivity : AppCompatActivity() {
         }
 
         btnSeleccionarLibro.setOnClickListener {
-            // Aquí iría tu actividad de selección de libros/métodos
+            val intent = Intent(this, LibrosActivity::class.java)
+            intent.putExtra("TEACHER_ID", teacherId)
+            startActivity(intent)
             Toast.makeText(this, "Selección de Libros", Toast.LENGTH_SHORT).show()
         }
 
