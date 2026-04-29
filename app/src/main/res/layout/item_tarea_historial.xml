@@ -48,4 +48,17 @@
         android:layout_marginTop="8dp"
         android:text="Descripción detallada de la tarea..."
         android:textColor="#263746" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnAbrirTareaItem"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/boton_gris"
+        android:backgroundTint="#173548"
+        android:text="Ver y Completar"
+        android:textColor="#FFFFFF"
+        android:textSize="13sp"
+        android:textAllCaps="false"
+        android:visibility="gone"/>
 </LinearLayout>

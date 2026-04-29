@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#163F56"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/tvTituloCancion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cargando canción..."
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginTop="20dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Toca la nota resaltada para avanzar"
+        android:textColor="#BDBDBD"
+        android:textSize="14sp"
+        android:layout_marginBottom="40dp"/>
+
+    <HorizontalScrollView
+        android:id="@+id/scrollPartitura"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:scrollbars="none"
+        android:layout_marginBottom="40dp">
+
+        <LinearLayout
+            android:id="@+id/containerNotas"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="40dp"
+            android:paddingEnd="40dp"/>
+    </HorizontalScrollView>
+
+    <TextView
+        android:id="@+id/tvNotaEscuchada"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Escuchando: --"
+        android:textColor="#FFEB3B"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="20dp"/>
+
+    <TextView
+        android:id="@+id/tvFeedback"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="¡Prepárate para tocar!"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:background="@drawable/fondo_formulario_tarea"
+        android:backgroundTint="#263746"
+        android:padding="16dp"/>
+
+</LinearLayout>

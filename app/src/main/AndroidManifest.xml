@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
         android:allowBackup="true"
@@ -15,58 +15,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ACADEMIAM"
         tools:targetApi="31">
-
         <activity
-            android:name=".EjercicioNotasActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".AsignarRecompensaActivity"
-            android:exported="false" />
-        <activity
-            android:name=".AsignarInsigniaActivity"
-            android:exported="false" />
-        <activity
-            android:name=".PerfilMaestroActivity"
-            android:exported="false" />
-        <activity
-            android:name=".HistorialTareasActivity"
-            android:exported="false" />
-        <activity
-            android:name=".HistorialReportesActivity"
-            android:exported="false" />
-        <activity
-            android:name=".LeccionesActivity"
-            android:exported="false" />
-        <activity
-            android:name=".LibrosActivity"
-            android:exported="false" />
-        <activity
-            android:name=".TareaActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ReporteClaseActivity"
-            android:exported="false" />
-        <activity
-            android:name=".CalendarioActivity"
-            android:exported="false" />
-        <activity
-            android:name=".HorarioActivity"
-            android:exported="false" />
-        <activity
-            android:name=".GrabacionesActivity"
-            android:exported="false" />
-        <activity
-            android:name=".PerfilAlumnoActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MisAlumnosActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MenuMaestroActivity"
+            android:name=".MenuAlumnoActivity"
             android:exported="false" />
         <activity
             android:name=".LoginActivity"
@@ -77,6 +27,63 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".MenuMaestroActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MenuAlumnos"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MisAlumnosActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PerfilAlumnoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PerfilMaestroActivity"
+            android:exported="false" />
+        <activity
+            android:name=".HorarioActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CalendarioActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ReporteClaseActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TareaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AsignarRecompensaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AsignarInsigniaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".HistorialReportesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".HistorialTareasActivity"
+            android:exported="false" />
+        <activity
+            android:name=".GrabacionesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LibrosActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LeccionesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PartituraInteractivaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EjercicioNotasActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

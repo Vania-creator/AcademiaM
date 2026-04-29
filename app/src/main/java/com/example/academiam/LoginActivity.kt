@@ -59,25 +59,18 @@ class LoginActivity : AppCompatActivity() {
 
                     if (passDB == pass) {
                         // --- LOGICA DE LOGIN EXITOSO ---
-// Dentro de buscarEnColeccion, cuando el login de maestro es exitoso:
                         if (coleccion == "teachers") {
                             val intent = Intent(this, MenuMaestroActivity::class.java)
-                            // Pasamos el ID del documento para saber a quién consultar en la siguiente pantalla
                             intent.putExtra("TEACHER_ID", doc.id)
                             startActivity(intent)
                             finish()
                         } else {
-                            // Si es alumno, solo mostramos el mensaje de bienvenida
-                            // porque la vista aún no está diseñada
-                            android.app.AlertDialog.Builder(this)
-                                .setTitle("¡Bienvenido!")
-                                .setMessage("Hola $nombreReal, pronto podrás ver tu perfil de alumno aquí.")
-                                .setPositiveButton("Aceptar", null)
-                                .show()
-
-                            // Opcional: Limpiar los campos después del mensaje
-                            findViewById<EditText>(R.id.etUsuario).text.clear()
-                            findViewById<EditText>(R.id.etContrasena).text.clear()
+                            // --- LOGIN ALUMNO ---
+                            val intent = Intent(this, MenuAlumnoActivity::class.java)
+                            // Pasamos el ID del alumno
+                            intent.putExtra("STUDENT_ID", doc.id)
+                            startActivity(intent)
+                            finish()
                         }
                     } else {
                         txtError.text = "Contraseña incorrecta"
