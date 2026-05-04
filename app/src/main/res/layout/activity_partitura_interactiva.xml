@@ -2,66 +2,117 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#163F56"
     android:orientation="vertical"
-    android:gravity="center_horizontal"
-    android:padding="20dp">
+    android:background="#F4F0E8"
+    android:padding="10dp"> <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:layout_marginBottom="8dp">
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnAtras"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:text="Atrás"
+        android:background="#173548"
+        android:textColor="#FFFFFF"
+        android:textAllCaps="false"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"/>
 
     <TextView
         android:id="@+id/tvTituloCancion"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Cargando canción..."
-        android:textColor="#FFFFFF"
-        android:textSize="24sp"
+        android:layout_weight="1"
+        android:text="Título de la Canción"
+        android:textSize="18sp"
         android:textStyle="bold"
-        android:layout_marginTop="20dp"/>
+        android:gravity="center"
+        android:textColor="#173548"/>
+</LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Toca la nota resaltada para avanzar"
-        android:textColor="#BDBDBD"
-        android:textSize="14sp"
-        android:layout_marginBottom="40dp"/>
-
-    <HorizontalScrollView
-        android:id="@+id/scrollPartitura"
+    <FrameLayout
+        android:id="@+id/framePartitura"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:scrollbars="none"
-        android:layout_marginBottom="40dp">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#FFFFFF"
+        android:elevation="4dp"
+        android:layout_marginBottom="8dp">
+
+        <ImageView
+            android:id="@+id/ivPartitura"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/logo"
+            android:scaleType="fitXY" />
+
+        <View
+            android:id="@+id/viewBarra"
+            android:layout_width="4dp"
+            android:layout_height="match_parent"
+            android:background="#FF0000" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
         <LinearLayout
-            android:id="@+id/containerNotas"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingStart="40dp"
-            android:paddingEnd="40dp"/>
-    </HorizontalScrollView>
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tvNotaEscuchada"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Escuchando: --"
-        android:textColor="#FFEB3B"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="20dp"/>
+            <TextView
+                android:id="@+id/tvSecuenciaNotas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Notas: --"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#173548"/>
 
-    <TextView
-        android:id="@+id/tvFeedback"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="¡Prepárate para tocar!"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:gravity="center"
-        android:background="@drawable/fondo_formulario_tarea"
-        android:backgroundTint="#263746"
-        android:padding="16dp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvFeedback"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="¡Prepárate!"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#FF9800"
+                    android:layout_marginEnd="16dp"/>
+
+                <TextView
+                    android:id="@+id/tvNotaEscuchada"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Escuchando: --"
+                    android:textSize="14sp"
+                    android:textColor="#64748B"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnGrabar"
+            android:layout_width="180dp"
+            android:layout_height="45dp"
+            android:text="🔴 Grabar Práctica"
+            android:background="#D32F2F"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textAllCaps="false"/>
+    </LinearLayout>
 
 </LinearLayout>

@@ -175,7 +175,7 @@
                 android:backgroundTint="@null"
                 android:elevation="5dp"
                 android:stateListAnimator="@null"
-                android:text="Seleccionar Libro"
+                android:text="Seleccionar Actividades"
                 android:textAllCaps="false"
                 android:textColor="#263746"
                 android:textSize="17sp"

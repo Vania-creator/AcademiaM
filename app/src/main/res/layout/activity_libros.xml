@@ -47,7 +47,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Selecciona un libro"
+                android:text="Selecciona una Actividad"
                 android:textColor="#173548"
                 android:textSize="22sp"
                 android:textStyle="bold"
@@ -104,7 +104,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Piano Adventure "
+                            android:text="Actividad 1: Notas Básicas"
                             android:textColor="#173548"
                             android:textSize="17sp"
                             android:textStyle="bold" />
@@ -163,7 +163,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Piano Adventure "
+                            android:text="Actividad 2: Escala Alta"
                             android:textColor="#173548"
                             android:textSize="17sp"
                             android:textStyle="bold" />
@@ -222,7 +222,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Piano Adventure "
+                            android:text="Actividad 3: Estrellita"
                             android:textColor="#173548"
                             android:textSize="17sp"
                             android:textStyle="bold" />
@@ -280,7 +280,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Piano Adventure "
+                            android:text="Actividad 4: Práctica"
                             android:textColor="#173548"
                             android:textSize="17sp"
                             android:textStyle="bold" />

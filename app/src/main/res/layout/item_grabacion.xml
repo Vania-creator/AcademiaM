@@ -51,8 +51,16 @@
             android:textColor="#8C837B"
             android:textSize="11sp"
             android:layout_marginTop="2dp" />
-    </LinearLayout>
 
+    </LinearLayout>
+    <ImageView
+        android:id="@+id/btnBorrarGr"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@android:drawable/ic_menu_delete"
+        android:contentDescription="Borrar grabación"
+        android:padding="8dp"
+        android:tint="#D32F2F" />
     <ImageView
         android:id="@+id/btnPlayGr"
         android:layout_width="42dp"
