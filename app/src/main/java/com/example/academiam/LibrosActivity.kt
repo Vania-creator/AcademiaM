@@ -20,21 +20,21 @@ class LibrosActivity : AppCompatActivity() {
         val itemLibro4 = findViewById<LinearLayout>(R.id.itemLibro4)
         val btnRegresar = findViewById<AppCompatButton>(R.id.btnRegresarLibros)
 
-        // 🎯 TEMPORAL: Asignamos una nota de prueba a cada "libro"
+        // 🎯 Mandamos una SECUENCIA de notas para cada libro y su título
         itemLibro1.setOnClickListener {
-            abrirPruebaDeAudio("C")
+            abrirSecuenciaDeAudio(arrayListOf("C", "D", "E", "F"), "Libro 1: Notas Básicas")
         }
 
         itemLibro2.setOnClickListener {
-            abrirPruebaDeAudio("D")
+            abrirSecuenciaDeAudio(arrayListOf("G", "A", "B", "C"), "Libro 2: Escala Alta")
         }
 
         itemLibro3.setOnClickListener {
-            abrirPruebaDeAudio("E")
+            abrirSecuenciaDeAudio(arrayListOf("C", "C", "G", "G"), "Libro 3: Estrellita")
         }
 
         itemLibro4.setOnClickListener {
-            abrirPruebaDeAudio("F")
+            abrirSecuenciaDeAudio(arrayListOf("E", "D", "C", "D", "E", "E", "E"), "Libro 4: Práctica")
         }
 
         btnRegresar.setOnClickListener {
@@ -42,22 +42,15 @@ class LibrosActivity : AppCompatActivity() {
         }
     }
 
-    // 🔥 FUNCIÓN TEMPORAL: Salta directamente a la verificación de micrófono
-    private fun abrirPruebaDeAudio(notaPrueba: String) {
+    private fun abrirSecuenciaDeAudio(secuencia: ArrayList<String>, titulo: String) {
         try {
-            // Cambiamos el destino a EjercicioNotasActivity
-            val intent = Intent(this, EjercicioNotasActivity::class.java)
-
-            // Mandamos "NOTA_OBJETIVO" en lugar de "nombre_libro" para que la otra pantalla lo entienda
-            intent.putExtra("NOTA_OBJETIVO", notaPrueba)
-
+            // Mandamos a la actividad correcta: PartituraInteractivaActivity
+            val intent = Intent(this, PartituraInteractivaActivity::class.java)
+            intent.putExtra("TITULO_CANCION", titulo)
+            intent.putStringArrayListExtra("SECUENCIA_NOTAS", secuencia)
             startActivity(intent)
-
         } catch (e: ActivityNotFoundException) {
-            Toast.makeText(this, "Error: Revisa el Manifest", Toast.LENGTH_LONG).show()
-        } catch (e: Exception) {
-            Toast.makeText(this, "Error al abrir: ${e.message}", Toast.LENGTH_LONG).show()
-            e.printStackTrace()
+            Toast.makeText(this, "Error: Revisa que PartituraInteractivaActivity esté en el Manifest", Toast.LENGTH_LONG).show()
         }
     }
 }

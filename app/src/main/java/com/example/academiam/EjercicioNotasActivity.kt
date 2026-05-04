@@ -1,7 +1,6 @@
 package com.example.academiam
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
@@ -17,14 +16,19 @@ import be.tarsos.dsp.pitch.PitchProcessor
 import kotlin.math.ln
 import kotlin.math.roundToInt
 
-class EjercicioNotasActivity : AppCompatActivity() {
+class EjercicioSecuenciaActivity : AppCompatActivity() {
 
     private lateinit var tvNotaObjetivo: TextView
     private lateinit var tvResultado: TextView
     private lateinit var dispatcher: AudioDispatcher
 
-    private var notaObjetivo = "C"
+    // Lógica para la secuencia
+    private var melodia = ArrayList<String>()
+    private var indiceActual = 0
     private val CODIGO_PERMISO_MIC = 1001
+
+    // Seguro para que una nota no se registre 100 veces por segundo
+    private var ultimaNotaEscuchada = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,37 +37,40 @@ class EjercicioNotasActivity : AppCompatActivity() {
         tvNotaObjetivo = findViewById(R.id.tvNotaObjetivo)
         tvResultado = findViewById(R.id.tvResultado)
 
-        // Recibir la nota objetivo enviada desde Lecciones o Libros
-        notaObjetivo = intent.getStringExtra("NOTA_OBJETIVO") ?: "C"
-        tvNotaObjetivo.text = "Toca la nota: $notaObjetivo"
+        // Recibir la lista de notas
+        melodia = intent.getStringArrayListExtra("SECUENCIA_NOTAS") ?: arrayListOf("C")
 
-        // 🔥 PASO 1: Verificar permisos de micrófono antes de encender el motor de audio
+        actualizarTextoObjetivo()
         verificarPermisosYComenzar()
+    }
+
+    private fun actualizarTextoObjetivo() {
+        if (indiceActual < melodia.size) {
+            tvNotaObjetivo.text = "Toca la nota: ${melodia[indiceActual]}"
+        }
     }
 
     private fun verificarPermisosYComenzar() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            // Si no hay permiso, lo pedimos formalmente al usuario
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), CODIGO_PERMISO_MIC)
         } else {
-            // Si ya hay permiso, iniciamos la detección
             iniciarDeteccion()
         }
     }
 
-    // 🔥 PASO 2: Manejar la respuesta del usuario a la solicitud de permiso
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == CODIGO_PERMISO_MIC) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 iniciarDeteccion()
             } else {
-                Toast.makeText(this, "El permiso de micrófono es necesario para evaluar las notas.", Toast.LENGTH_LONG).show()
-                finish() // Regresar a la pantalla anterior si no hay permiso
+                Toast.makeText(this, "Permiso denegado.", Toast.LENGTH_LONG).show()
+                finish()
             }
         }
     }
 
+    // 🔥 EXACTAMENTE TU CÓDIGO ORIGINAL 🔥
     private fun iniciarDeteccion() {
         val handler = PitchDetectionHandler { result, _ ->
             val pitch = result.pitch
@@ -83,11 +90,8 @@ class EjercicioNotasActivity : AppCompatActivity() {
         )
 
         try {
-            // Inicializar el despachador de audio específico para Android
             dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0)
             dispatcher.addAudioProcessor(processor)
-
-            // Iniciar el hilo de procesamiento
             Thread(dispatcher, "Audio Dispatcher").start()
         } catch (e: Exception) {
             runOnUiThread {
@@ -97,13 +101,33 @@ class EjercicioNotasActivity : AppCompatActivity() {
     }
 
     private fun verificarNota(notaDetectada: String) {
-        // Comparamos si la nota detectada es la que buscamos
-        if (notaDetectada.startsWith(notaObjetivo)) {
+        // Si ya completamos la canción, ignoramos el micrófono
+        if (indiceActual >= melodia.size) return
+
+        // Evitar saturación si se mantiene la misma nota sonando
+        if (notaDetectada == ultimaNotaEscuchada) return
+        ultimaNotaEscuchada = notaDetectada
+
+        val notaObjetivoActual = melodia[indiceActual]
+
+        if (notaDetectada.startsWith(notaObjetivoActual)) {
             tvResultado.text = "✔ Nota Correcta ($notaDetectada)"
             tvResultado.setTextColor(Color.GREEN)
 
-            // 🎯 DISEÑO: No detenemos el dispatcher ni cerramos la actividad.
-            // Esto permite que sigas practicando la nota y veas el cambio en tiempo real.
+            // Avanzamos de nota
+            indiceActual++
+
+            if (indiceActual == melodia.size) {
+                // ¡FINALIZÓ LA PARTITURA!
+                tvNotaObjetivo.text = "¡COMPLETADO! 🎉"
+                tvNotaObjetivo.setTextColor(Color.parseColor("#4CAF50"))
+                tvResultado.text = "Has tocado toda la secuencia correctamente."
+                if (::dispatcher.isInitialized && !dispatcher.isStopped) {
+                    dispatcher.stop()
+                }
+            } else {
+                actualizarTextoObjetivo() // Mostramos la siguiente nota a tocar
+            }
 
         } else {
             tvResultado.text = "❌ Incorrecto ($notaDetectada)"
@@ -111,21 +135,17 @@ class EjercicioNotasActivity : AppCompatActivity() {
         }
     }
 
+    // 🔥 EXACTAMENTE TU CÓDIGO ORIGINAL 🔥
     private fun getNoteFromFrequency(freq: Float): String {
-        // Cálculo matemático para convertir frecuencia (Hz) a nota musical
         val noteNumber = (12 * (ln(freq / 440.0) / ln(2.0)) + 69).roundToInt()
-
-        // 🔥 PROTECCIÓN: Evita índices negativos por ruidos extraños
         val index = (noteNumber % 12 + 12) % 12
         val notes = arrayOf("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B")
-
         return notes[index]
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        // Liberar el micrófono al salir de la pantalla para evitar fugas de memoria
-        if (::dispatcher.isInitialized) {
+        if (::dispatcher.isInitialized && !dispatcher.isStopped) {
             dispatcher.stop()
         }
     }

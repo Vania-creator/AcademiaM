@@ -50,7 +50,7 @@ class LeccionesActivity : AppCompatActivity() {
     // 🔥 FUNCIÓN PARA ABRIR EL EJERCICIO (Actualizada con protección anti-cierres)
     private fun abrirEjercicio(nota: String) {
         try {
-            val intent = Intent(this, EjercicioNotasActivity::class.java)
+            //  val intent = Intent(this, EjercicioNotasActivity::class.java)
             intent.putExtra("NOTA_OBJETIVO", nota)
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {

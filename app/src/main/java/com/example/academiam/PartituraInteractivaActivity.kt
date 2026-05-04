@@ -4,12 +4,13 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
-import android.view.Gravity
-import android.widget.HorizontalScrollView
-import android.widget.LinearLayout
+import android.os.CountDownTimer
+import android.view.View
+import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import be.tarsos.dsp.AudioDispatcher
@@ -22,95 +23,101 @@ import kotlin.math.roundToInt
 class PartituraInteractivaActivity : AppCompatActivity() {
 
     private lateinit var dispatcher: AudioDispatcher
-    private lateinit var containerNotas: LinearLayout
-    private lateinit var scrollPartitura: HorizontalScrollView
+
+    // UI
+    private lateinit var framePartitura: FrameLayout
+    private lateinit var viewBarra: View
     private lateinit var tvNotaEscuchada: TextView
     private lateinit var tvFeedback: TextView
+    private lateinit var tvSecuenciaNotas: TextView
+    private lateinit var btnAtras: AppCompatButton
+    private lateinit var btnGrabar: AppCompatButton
 
     private val CODIGO_PERMISO_MIC = 1001
 
-    // --- LÓGICA DE LA PARTITURA ---
-    private var melodia = listOf<String>()
+    // Lógica
+    private var melodia = ArrayList<String>()
     private var indiceActual = 0
-    private var ultimoAciertoMs: Long = 0
-    private val COOLDOWN_NOTAS_MS = 600 // Pausa de medio segundo para no saltar notas dobles de golpe
+    private var ultimaNotaEscuchada = ""
+    private var estaPreparado = false // 🔥 Controla que no lea notas hasta terminar el "Prepárate"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_partitura_interactiva)
 
-        containerNotas = findViewById(R.id.containerNotas)
-        scrollPartitura = findViewById(R.id.scrollPartitura)
+        framePartitura = findViewById(R.id.framePartitura)
+        viewBarra = findViewById(R.id.viewBarra)
         tvNotaEscuchada = findViewById(R.id.tvNotaEscuchada)
         tvFeedback = findViewById(R.id.tvFeedback)
+        tvSecuenciaNotas = findViewById(R.id.tvSecuenciaNotas)
+        btnAtras = findViewById(R.id.btnAtras)
+        btnGrabar = findViewById(R.id.btnGrabar)
 
         val titulo = intent.getStringExtra("TITULO_CANCION") ?: "Práctica Libre"
         findViewById<TextView>(R.id.tvTituloCancion).text = titulo
 
+        // 🔥 FUNCIONES DE LOS BOTONES
+        btnAtras.setOnClickListener {
+            finish() // Regresa a la pantalla de libros
+        }
+
+        btnGrabar.setOnClickListener {
+            Toast.makeText(this, "Próximamente: Se activará la grabación para el maestro.", Toast.LENGTH_SHORT).show()
+            // Aquí irá el código para grabar la sesión en un archivo y subirlo a Firebase
+        }
+
         val notasArray = intent.getStringArrayListExtra("SECUENCIA_NOTAS")
         if (notasArray != null && notasArray.isNotEmpty()) {
-            melodia = notasArray.toList()
-            dibujarPartitura()
-            verificarPermisosYComenzar()
+            melodia = ArrayList(notasArray)
+            tvSecuenciaNotas.text = "Secuencia: ${melodia.joinToString(" - ")}"
+
+            moverBarraVisual()
+            iniciarCuentaRegresiva() // 🔥 Iniciamos la secuencia de "Prepárate"
         } else {
             Toast.makeText(this, "Error: Melodía vacía", Toast.LENGTH_LONG).show()
             finish()
         }
     }
 
-    private fun dibujarPartitura() {
-        containerNotas.removeAllViews()
-        for (nota in melodia) {
-            val tvNota = TextView(this).apply {
-                text = nota
-                textSize = 24f
-                gravity = Gravity.CENTER
-                setTextColor(Color.WHITE)
-                setBackgroundResource(R.drawable.circulo_gris)
+    // --- NUEVO: CUENTA REGRESIVA DE PREPARACIÓN ---
+    private fun iniciarCuentaRegresiva() {
+        tvFeedback.text = "¡Prepárate!"
+        tvFeedback.setTextColor(Color.parseColor("#FF9800")) // Naranja
 
-                val params = LinearLayout.LayoutParams(120, 120)
-                params.setMargins(15, 0, 15, 0)
-                layoutParams = params
+        // Un timer de 3 segundos (3000ms), que se actualiza cada segundo (1000ms)
+        object : CountDownTimer(3000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val segundos = millisUntilFinished / 1000 + 1
+                tvFeedback.text = "Empezamos en... $segundos"
             }
-            containerNotas.addView(tvNota)
-        }
-        actualizarMarcadorVisual()
+
+            override fun onFinish() {
+                estaPreparado = true // Desbloqueamos el juego
+                actualizarTextoTurno()
+                verificarPermisosYComenzar() // Ahora sí, encendemos el micrófono
+            }
+        }.start()
     }
 
-    private fun actualizarMarcadorVisual() {
-        for (i in 0 until containerNotas.childCount) {
-            val tv = containerNotas.getChildAt(i) as TextView
-            when {
-                i < indiceActual -> { // YA TOCADA
-                    tv.setTextColor(Color.WHITE)
-                    tv.setBackgroundColor(Color.parseColor("#4CAF50")) // Verde
-                    tv.alpha = 0.5f
-                    tv.scaleX = 0.8f
-                    tv.scaleY = 0.8f
-                }
-                i == indiceActual -> { // TURNO ACTUAL
-                    tv.setTextColor(Color.BLACK)
-                    tv.setBackgroundColor(Color.parseColor("#FFC107")) // Amarillo
-                    tv.alpha = 1.0f
-                    tv.scaleX = 1.2f
-                    tv.scaleY = 1.2f
-
-                    // Auto-scroll
-                    val scrollX = (tv.left + tv.right) / 2 - scrollPartitura.width / 2
-                    scrollPartitura.smoothScrollTo(scrollX, 0)
-                }
-                else -> { // FUTURAS
-                    tv.setTextColor(Color.WHITE)
-                    tv.setBackgroundResource(R.drawable.circulo_gris)
-                    tv.alpha = 0.8f
-                    tv.scaleX = 1.0f
-                    tv.scaleY = 1.0f
-                }
-            }
+    private fun actualizarTextoTurno() {
+        if (indiceActual < melodia.size) {
+            tvFeedback.text = "Turno de tocar: ${melodia[indiceActual]}"
+            tvFeedback.setTextColor(Color.parseColor("#4CAF50"))
         }
     }
 
-    // 🔥 CÓDIGO INTACTO DE TU COMPAÑERO ABAJO DE ESTA LÍNEA 🔥
+    private fun moverBarraVisual() {
+        framePartitura.post {
+            val anchoTotal = framePartitura.width.toFloat()
+            val tamañoPaso = anchoTotal / melodia.size
+            val nuevaPosicionX = tamañoPaso * indiceActual
+
+            viewBarra.animate()
+                .translationX(nuevaPosicionX)
+                .setDuration(250)
+                .start()
+        }
+    }
 
     private fun verificarPermisosYComenzar() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -126,7 +133,7 @@ class PartituraInteractivaActivity : AppCompatActivity() {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 iniciarDeteccion()
             } else {
-                Toast.makeText(this, "El permiso de micrófono es necesario.", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Permiso denegado.", Toast.LENGTH_LONG).show()
                 finish()
             }
         }
@@ -135,29 +142,61 @@ class PartituraInteractivaActivity : AppCompatActivity() {
     private fun iniciarDeteccion() {
         val handler = PitchDetectionHandler { result, _ ->
             val pitch = result.pitch
-
-            // 🔥 LA SOLUCIÓN: result.isPitched diferencia la música del ruido de fondo
-            if (pitch > 0 && result.isPitched) {
+            if (pitch > 0) {
                 val notaDetectada = getNoteFromFrequency(pitch)
                 runOnUiThread {
                     procesarJugada(notaDetectada)
                 }
-            } else {
-                // Si es puro ruido, limpiamos el texto para que no se quede pegada la "G"
-                runOnUiThread {
-                    tvNotaEscuchada.text = "Esperando nota..."
-                }
             }
         }
 
-        val processor = PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.YIN, 22050f, 1024, handler)
+        val processor = PitchProcessor(
+            PitchProcessor.PitchEstimationAlgorithm.YIN,
+            22050f,
+            1024,
+            handler
+        )
 
         try {
             dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0)
             dispatcher.addAudioProcessor(processor)
             Thread(dispatcher, "Audio Dispatcher").start()
         } catch (e: Exception) {
-            runOnUiThread { Toast.makeText(this, "Error al iniciar micrófono: ${e.message}", Toast.LENGTH_SHORT).show() }
+            runOnUiThread {
+                Toast.makeText(this, "Error al iniciar micrófono: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun procesarJugada(notaDetectada: String) {
+        // 🔥 Si aún no termina el "Prepárate", ignoramos el sonido
+        if (!estaPreparado) return
+
+        tvNotaEscuchada.text = "Escuchando: $notaDetectada"
+
+        if (indiceActual >= melodia.size) return
+
+        if (notaDetectada == ultimaNotaEscuchada) return
+        ultimaNotaEscuchada = notaDetectada
+
+        val notaObjetivoActual = melodia[indiceActual]
+
+        if (notaDetectada.startsWith(notaObjetivoActual)) {
+            indiceActual++
+            moverBarraVisual()
+
+            if (indiceActual == melodia.size) {
+                tvFeedback.text = "¡COMPLETADO! 🎉"
+                tvFeedback.setTextColor(Color.parseColor("#4CAF50"))
+                tvSecuenciaNotas.text = "¡Bien hecho!"
+                tvNotaEscuchada.text = "Has tocado toda la secuencia."
+
+                if (::dispatcher.isInitialized && !dispatcher.isStopped) {
+                    dispatcher.stop()
+                }
+            } else {
+                actualizarTextoTurno()
+            }
         }
     }
 
@@ -166,33 +205,6 @@ class PartituraInteractivaActivity : AppCompatActivity() {
         val index = (noteNumber % 12 + 12) % 12
         val notes = arrayOf("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B")
         return notes[index]
-    }
-
-    // --- CONEXIÓN ENTRE LA IA Y EL JUEGO ---
-    private fun procesarJugada(notaDetectada: String) {
-        // Mostramos lo que la IA lee, exactamente como lo hacía tu compañero
-        tvNotaEscuchada.text = "Escuchando: $notaDetectada"
-
-        if (indiceActual >= melodia.size) return
-
-        val tiempoActual = System.currentTimeMillis()
-        val notaObjetivo = melodia[indiceActual]
-
-        // Comparamos si le atinó
-        if (notaDetectada.startsWith(notaObjetivo) && (tiempoActual - ultimoAciertoMs > COOLDOWN_NOTAS_MS)) {
-            ultimoAciertoMs = tiempoActual
-            indiceActual++
-            actualizarMarcadorVisual()
-
-            if (indiceActual == melodia.size) {
-                tvFeedback.text = "¡Felicidades! 🎉"
-                tvFeedback.setBackgroundColor(Color.parseColor("#4CAF50"))
-                tvNotaEscuchada.text = "Partitura Completada"
-                if (::dispatcher.isInitialized) dispatcher.stop()
-            } else {
-                tvFeedback.text = "Siguiente nota: ${melodia[indiceActual]}"
-            }
-        }
     }
 
     override fun onDestroy() {
