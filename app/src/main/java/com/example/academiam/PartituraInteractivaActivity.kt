@@ -233,7 +233,7 @@ class PartituraInteractivaActivity : AppCompatActivity() {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 iniciarDeteccion()
             } else {
-                Toast.makeText(this, "Permiso de micrófono denegado.", Toast.LENGTH_LONG).show()
+                ToastHelper.mostrarMensaje(this, "Permiso de micrófono denegado.")
                 finish()
             }
         }
@@ -263,7 +263,7 @@ class PartituraInteractivaActivity : AppCompatActivity() {
             Thread(dispatcher, "Audio Dispatcher").start()
         } catch (e: Exception) {
             runOnUiThread {
-                Toast.makeText(this, "Error al iniciar micrófono: ${e.message}", Toast.LENGTH_SHORT).show()
+                ToastHelper.mostrarMensaje(this, "Error al iniciar micrófono: ${e.message}")
             }
         }
     }

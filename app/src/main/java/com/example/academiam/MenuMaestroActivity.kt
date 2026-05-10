@@ -39,7 +39,7 @@ class MenuMaestroActivity : AppCompatActivity() {
                 intent.putExtra("TEACHER_ID", teacherId)
                 startActivity(intent)
             } else {
-                Toast.makeText(this, "Sesión no válida", Toast.LENGTH_SHORT).show()
+                ToastHelper.mostrarMensaje(this, "Sesión no válida")
             }
         }
 
@@ -47,18 +47,21 @@ class MenuMaestroActivity : AppCompatActivity() {
         btnMisAlumnos.setOnClickListener {
             val intent = Intent(this, MisAlumnosActivity::class.java)
             intent.putExtra("TEACHER_ID", teacherId)
+            ToastHelper.mostrarMensaje(this, "Mis alumnos")
             startActivity(intent)
         }
 
         btnHorario.setOnClickListener {
             val intent = Intent(this, HorarioActivity::class.java)
             intent.putExtra("TEACHER_ID", teacherId)
+            ToastHelper.mostrarMensaje(this, "Ver Horario")
             startActivity(intent)
         }
 
         btnReporteClase.setOnClickListener {
             val intent = Intent(this, ReporteClaseActivity::class.java)
             intent.putExtra("TEACHER_ID", teacherId)
+            ToastHelper.mostrarMensaje(this, "Reporte de clases")
             startActivity(intent)
         }
 
@@ -66,12 +69,13 @@ class MenuMaestroActivity : AppCompatActivity() {
             val intent = Intent(this, AsignarRecompensaActivity::class.java)
             intent.putExtra("TEACHER_ID", teacherId)
             startActivity(intent)
-            Toast.makeText(this, "Módulo de Recompensas", Toast.LENGTH_SHORT).show()
+            ToastHelper.mostrarMensaje(this, "Asignar Insignias")
         }
 
         btnTarea.setOnClickListener {
             val intent = Intent(this, TareaActivity::class.java)
             intent.putExtra("TEACHER_ID", teacherId)
+            ToastHelper.mostrarMensaje(this, "Asignar Tareas")
             startActivity(intent)
         }
 
@@ -79,13 +83,14 @@ class MenuMaestroActivity : AppCompatActivity() {
             val intent = Intent(this, LibrosActivity::class.java)
             intent.putExtra("TEACHER_ID", teacherId)
             startActivity(intent)
-            Toast.makeText(this, "Selección de Libros", Toast.LENGTH_SHORT).show()
+            ToastHelper.mostrarMensaje(this, "Selección de Libros")
         }
 
         btnLogout.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
+            ToastHelper.mostrarMensaje(this, "Hasta Luego")
             finish()
         }
 

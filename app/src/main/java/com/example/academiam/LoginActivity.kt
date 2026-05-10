@@ -87,7 +87,7 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
             .addOnFailureListener {
-                Toast.makeText(this, "Error de conexión con la base de datos", Toast.LENGTH_SHORT).show()
+                ToastHelper.mostrarMensaje(this, "Error de conexión con la base de datos")
             }
     }
 }

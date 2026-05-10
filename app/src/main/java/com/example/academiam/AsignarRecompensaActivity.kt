@@ -19,9 +19,11 @@ class AsignarRecompensaActivity : AppCompatActivity() {
     private var teacherId: String = ""
     private var studentIdSeleccionado: String = ""
     private var studentNameSeleccionado: String = ""
-    private var insigniaSeleccionada: String = ""
 
-    // Lista para guardar las clases sin duplicados
+    // Almacena el ID interno ("primersonido") y el nombre legible ("Primer Sonido")
+    private var claveInsigniaSeleccionada: String = ""
+    private var nombreInsigniaSeleccionada: String = ""
+
     private val clasesDelDia = mutableListOf<Map<String, Any>>()
     private val listaVistasInsignias = mutableListOf<ImageView>()
 
@@ -29,13 +31,21 @@ class AsignarRecompensaActivity : AppCompatActivity() {
     private lateinit var btnSeleccionarAlumno: TextView
     private lateinit var txtErrorRecompensa: TextView
 
-    // LA GRAN LISTA DE INSIGNIAS (Puedes agregar todas las que quieras)
-    private val catalogoInsignias = listOf(
-        "Súper Práctica", "Oído de Oro", "Ritmo Perfecto",
-        "Gran Avance", "As de Escalas", "Creatividad",
-        "Puntualidad", "Dedos Rápidos", "Teoría Master",
-        "Concierto", "Primera Vista", "Compañerismo",
-        "Rockstar", "Memoria Visual", "Afinación"
+    // 🔥 EL DICCIONARIO MAESTRO DE TUS 39 INSIGNIAS (13 x 3 Niveles)
+    private val catalogoInsignias = mapOf(
+        "Primer Sonido" to Pair("primersonido", listOf(50L, 100L, 150L)),
+        "En Marcha" to Pair("enmarcha", listOf(80L, 160L, 240L)),
+        "Dominio Básico" to Pair("dominiobasico", listOf(100L, 200L, 300L)),
+        "Talento en Ascenso" to Pair("talentoacenso", listOf(150L, 300L, 450L)),
+        "Teclas Maestras" to Pair("teclasmaestras", listOf(120L, 240L, 360L)),
+        "Constancia" to Pair("constancia", listOf(90L, 180L, 270L)),
+        "Disciplina Total" to Pair("diciplinatotal", listOf(200L, 400L, 600L)),
+        "Tiempo Invertido" to Pair("tiempoinvertido", listOf(160L, 360L, 480L)),
+        "Conocimiento Musical" to Pair("conocimientomusical", listOf(110L, 220L, 330L)),
+        "Formación Sólida" to Pair("formacionsolida", listOf(180L, 360L, 450L)),
+        "Excelencia" to Pair("excelencia",              listOf(250L, 500L, 750L)),
+        "Progreso Acelerado" to Pair("progresoacelerado", listOf(140L, 280L, 360L)),
+        "Pasión por la Música" to Pair("pasionporlamusica", listOf(300L, 600L, 900L))
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,7 +54,7 @@ class AsignarRecompensaActivity : AppCompatActivity() {
 
         teacherId = intent.getStringExtra("TEACHER_ID") ?: ""
         if (teacherId.isEmpty()) {
-            Toast.makeText(this, "Error: Sesión de maestro no encontrada", Toast.LENGTH_LONG).show()
+            ToastHelper.mostrarMensaje(this, "Error: Sesión de maestro no encontrada")
             finish()
         }
 
@@ -56,7 +66,7 @@ class AsignarRecompensaActivity : AppCompatActivity() {
 
         btnSeleccionarAlumno.setOnClickListener {
             if (clasesDelDia.isNotEmpty()) mostrarSelectorAlumnos()
-            else Toast.makeText(this, "Elige una fecha con alumnos primero", Toast.LENGTH_SHORT).show()
+            else ToastHelper.mostrarMensaje(this, "Elige una fecha con alumnos primero")
         }
 
         cargarCatalogoInsignias()
@@ -76,7 +86,6 @@ class AsignarRecompensaActivity : AppCompatActivity() {
         }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
     }
 
-    // Usando exactamente tu misma lógica de búsqueda de ReporteClaseActivity
     private fun buscarAlumnosTusClases(y: Int, m: Int, d: Int, fechaCompleta: String) {
         val calendar = Calendar.getInstance()
         calendar.set(y, m, d)
@@ -144,10 +153,11 @@ class AsignarRecompensaActivity : AppCompatActivity() {
             }.show()
     }
 
+    // 🔥 CÓDIGO ACTUALIZADO: Carga las imágenes PNG dinámicamente
     private fun cargarCatalogoInsignias() {
         val gridLayout = findViewById<GridLayout>(R.id.gridLayoutInsignias)
 
-        for (nombre in catalogoInsignias) {
+        for ((nombre, datos) in catalogoInsignias) {
             val view = LayoutInflater.from(this).inflate(R.layout.item_insignia_grid, gridLayout, false)
 
             val img = view.findViewById<ImageView>(R.id.imgInsignia)
@@ -156,14 +166,29 @@ class AsignarRecompensaActivity : AppCompatActivity() {
             txt.text = nombre
             listaVistasInsignias.add(img)
 
+            // --- LÓGICA DE IMÁGENES DINÁMICAS ---
+            val clave = datos.first
+            // Construimos el nombre del archivo de Nivel 1 (ej: "primersonido1")
+            val nombreArchivo = "${clave}1"
+
+            // Buscamos el ID en la carpeta drawable
+            val imageResId = resources.getIdentifier(nombreArchivo, "drawable", packageName)
+
+            if (imageResId != 0) {
+                img.setImageResource(imageResId) // Asigna la imagen PNG correcta
+            } else {
+                img.setImageResource(R.drawable.logo) // Si te falta alguna foto, pone el logo de Neumastudio por defecto
+            }
+            // ------------------------------------
+
             view.setOnClickListener {
-                // Apagamos todas y prendemos solo la seleccionada
                 listaVistasInsignias.forEach { it.alpha = 0.3f }
                 img.alpha = 1.0f
-                insigniaSeleccionada = nombre
+
+                claveInsigniaSeleccionada = clave
+                nombreInsigniaSeleccionada = nombre
             }
 
-            // Configurar pesos para que quepan exactamente 3 columnas
             val params = GridLayout.LayoutParams()
             params.width = 0
             params.height = GridLayout.LayoutParams.WRAP_CONTENT
@@ -181,13 +206,57 @@ class AsignarRecompensaActivity : AppCompatActivity() {
             return
         }
 
-        if (insigniaSeleccionada.isEmpty()) {
+        if (claveInsigniaSeleccionada.isEmpty()) {
             txtErrorRecompensa.text = "Selecciona la insignia que quieres entregar"
             txtErrorRecompensa.visibility = View.VISIBLE
             return
         }
 
-        // Lo guardamos en "reports" para que el PerfilAlumnoActivity lo detecte y dibuje el icono
+        txtErrorRecompensa.visibility = View.GONE
+        findViewById<AppCompatButton>(R.id.btnAsignarRec).isEnabled = false
+
+        // 🔥 TRANSACCIÓN DE NIVELES Y EXPERIENCIA
+        val docRef = db.collection("students").document(studentIdSeleccionado)
+
+        db.runTransaction { transaction ->
+            val snapshot = transaction.get(docRef)
+            val expActual = snapshot.getLong("expTotal") ?: 0L
+
+            val nivelActualInsignia = snapshot.getLong("insignias_progreso.$claveInsigniaSeleccionada") ?: 0L
+            val nuevoNivelInsignia = nivelActualInsignia + 1
+
+            if (nuevoNivelInsignia > 3) {
+                throw Exception("MAX_LEVEL")
+            }
+
+            val arreglosXP = catalogoInsignias[nombreInsigniaSeleccionada]?.second
+            val xpGanada = arreglosXP?.getOrNull((nuevoNivelInsignia - 1).toInt()) ?: 0L
+
+            val nuevaExp = expActual + xpGanada
+            val nuevoNivelGeneral = (nuevaExp / 500).toInt()
+
+            transaction.update(docRef, "expTotal", nuevaExp)
+            transaction.update(docRef, "nivel", nuevoNivelGeneral)
+            transaction.update(docRef, "insignias_progreso.$claveInsigniaSeleccionada", nuevoNivelInsignia)
+
+            mapOf("xp" to xpGanada, "nivel" to nuevoNivelInsignia)
+
+        }.addOnSuccessListener { resultado ->
+            val xp = resultado["xp"]
+            val lvl = resultado["nivel"]
+            registrarReporteLogro(lvl as Long, xp as Long)
+
+        }.addOnFailureListener { e ->
+            findViewById<AppCompatButton>(R.id.btnAsignarRec).isEnabled = true
+            if (e.message == "MAX_LEVEL") {
+                ToastHelper.mostrarMensaje(this, "El alumno ya tiene el nivel 3 (Máximo) de esta insignia")
+            } else {
+                ToastHelper.mostrarMensaje(this, "Error de red: ${e.message}")
+            }
+        }
+    }
+
+    private fun registrarReporteLogro(nivelLogrado: Long, xpGanada: Long) {
         val reporteLogro = hashMapOf(
             "studentId" to studentIdSeleccionado,
             "studentName" to studentNameSeleccionado,
@@ -197,15 +266,13 @@ class AsignarRecompensaActivity : AppCompatActivity() {
             "tipoClase" to "Logro",
             "instrument" to "N/A",
             "cuantoEstudio" to "N/A",
-            "content" to "¡Felicidades! Se ha otorgado la insignia: $insigniaSeleccionada por excelente desempeño.",
-            "insignia" to insigniaSeleccionada,
+            "content" to "¡Felicidades! Desbloqueaste $nombreInsigniaSeleccionada Nivel $nivelLogrado. (+$xpGanada XP)",
+            "insignia" to nombreInsigniaSeleccionada,
             "createdAt" to com.google.firebase.Timestamp.now()
         )
 
         db.collection("reports").add(reporteLogro).addOnSuccessListener {
-            Toast.makeText(this, "¡Insignia otorgada con éxito!", Toast.LENGTH_SHORT).show()
-
-            // Te manda directo al perfil del alumno para ver la medalla en vivo
+            ToastHelper.mostrarMensaje(this, "Insignia nivel $nivelLogrado otorgada con éxito!")
             val intent = Intent(this, PerfilAlumnoActivity::class.java)
             intent.putExtra("STUDENT_ID", studentIdSeleccionado)
             startActivity(intent)

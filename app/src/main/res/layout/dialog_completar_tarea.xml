@@ -1,73 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="24dp"
-    android:background="@drawable/fondo_formulario_tarea">
-
-    <TextView
-        android:id="@+id/dialogTituloTarea"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Título de la tarea"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="#173548"
-        android:layout_marginBottom="12dp"/>
-
-    <TextView
-        android:id="@+id/dialogDescTarea"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Descripción detallada de lo que tiene que hacer el alumno para poder ganar la recompensa."
-        android:textSize="15sp"
-        android:textColor="#444444"
-        android:layout_marginBottom="20dp"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Recompensa prometida:"
-        android:textStyle="bold"
-        android:textSize="13sp"
-        android:textColor="#263746"/>
-
-    <TextView
-        android:id="@+id/dialogInsigniaTarea"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="🏅 Insignia"
-        android:textSize="14sp"
-        android:textColor="#E64A19"
-        android:textStyle="bold"
-        android:layout_marginBottom="24dp"/>
+    app:cardCornerRadius="20dp"
+    app:cardElevation="8dp"
+    android:layout_margin="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:background="#F4F0E8"
+        android:padding="24dp"
+        android:gravity="center_horizontal">
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnCerrarDialogTarea"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="8dp"
-            android:text="Cerrar"
-            android:background="@drawable/boton_gris"
-            android:textAllCaps="false"/>
+        <TextView
+            android:id="@+id/dialogTituloTarea"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Título"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#173548"
+            android:gravity="center"
+            android:layout_marginBottom="12dp"/>
+
+        <TextView
+            android:id="@+id/dialogDescTarea"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Descripción..."
+            android:textColor="#263746"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_marginBottom="20dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/card_alumno"
+            android:padding="12dp"
+            android:gravity="center"
+            android:layout_marginBottom="24dp">
+
+            <ImageView
+                android:id="@+id/imgInsigniaDialog"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/logo"
+                android:scaleType="fitCenter"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:id="@+id/txtInfoRecompensaDialog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Calculando recompensa..."
+                android:textColor="#173548"
+                android:textStyle="bold"
+                android:textSize="13sp"
+                android:gravity="center"/>
+        </LinearLayout>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnMarcarCompletada"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:text="¡Ya la hice!"
-            android:textColor="#FFFFFF"
             android:background="@drawable/boton_gris"
             android:backgroundTint="#4CAF50"
+            android:text="¡Terminé la tarea!"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:layout_marginBottom="12dp"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnCerrarDialogTarea"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/boton_gris"
+            android:text="Cerrar"
+            android:textColor="#173548"
             android:textAllCaps="false"/>
+
     </LinearLayout>
-</LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

@@ -69,7 +69,7 @@ class LibrosActivity : AppCompatActivity() {
             intent.putExtra("IMAGEN_PARTITURA", imagenResId) // 🔥 Mandamos el ID de la imagen
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            Toast.makeText(this, "Error: Revisa que PartituraInteractivaActivity esté en el Manifest", Toast.LENGTH_LONG).show()
+            ToastHelper.mostrarMensaje(this, "Error: Revisa que PartituraInteractivaActivity esté en el Manifest")
         }
     }
 }

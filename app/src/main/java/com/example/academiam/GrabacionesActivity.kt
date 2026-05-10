@@ -150,14 +150,14 @@ class GrabacionesActivity : AppCompatActivity() {
             if (archivo.exists()) {
                 val eliminado = archivo.delete() // 🔥 Borra el archivo físico
                 if (eliminado) {
-                    Toast.makeText(this, "Grabación eliminada", Toast.LENGTH_SHORT).show()
+                    ToastHelper.mostrarMensaje(this, "Grabación eliminada")
                     cargarGrabacionesLocales() // Recargamos la lista para que desaparezca el item
                 } else {
-                    Toast.makeText(this, "No se pudo borrar el archivo", Toast.LENGTH_SHORT).show()
+                    ToastHelper.mostrarMensaje(this, "No se pudo borrar el archivo")
                 }
             }
         } catch (e: Exception) {
-            Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            ToastHelper.mostrarMensaje(this, "Error: ${e.message}")
         }
     }
     private fun mostrarError(msj: String) {

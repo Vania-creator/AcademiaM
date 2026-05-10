@@ -18,27 +18,33 @@ class TareaActivity : AppCompatActivity() {
     private val db = FirebaseFirestore.getInstance()
     private var teacherId: String = ""
     private var studentIdSeleccionado: String = ""
-    private var insigniaMotivacional: String = "Ninguna"
 
-    // Lista para guardar alumnos únicos
+    // 🔥 Variables para la recompensa de la tarea
+    private var insigniaSeleccionada: String = "Ninguna"
+    private var claveInsigniaSeleccionada: String = "ninguna"
+
     private val listaAlumnosFiltrados = mutableListOf<Map<String, Any>>()
 
     private lateinit var btnFecha: TextView
     private lateinit var btnAlumno: TextView
     private lateinit var txtError: TextView
 
+    // 🔥 Las 4 Insignias ideales para recompensar Tareas en Casa
+    private val insigniasTarea = mapOf(
+        "Tiempo Invertido" to Pair("tiempoinvertido", listOf(160L, 360L, 480L)),
+        "En Marcha" to Pair("enmarcha", listOf(80L, 160L, 240L)),
+        "Teclas Maestras" to Pair("teclasmaestras", listOf(120L, 240L, 360L)),
+        "Formación Sólida" to Pair("formacionsolida", listOf(180L, 360L, 450L))
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tarea)
 
-        // RECUPERAR ID DEL MAESTRO
         teacherId = intent.getStringExtra("TEACHER_ID") ?: ""
 
-        // Log para que tú veas en el Logcat si el ID está llegando
-        Log.d("DEBUG_TAREA", "Teacher ID recibido: $teacherId")
-
         if (teacherId.isEmpty()) {
-            Toast.makeText(this, "Error: No se detectó al maestro", Toast.LENGTH_SHORT).show()
+            ToastHelper.mostrarMensaje(this, "Error: No se detectó al maestro")
             finish()
         }
 
@@ -51,7 +57,7 @@ class TareaActivity : AppCompatActivity() {
         btnFecha.setOnClickListener { mostrarDatePicker() }
         btnAlumno.setOnClickListener {
             if (listaAlumnosFiltrados.isNotEmpty()) mostrarSelectorAlumnos()
-            else Toast.makeText(this, "Elige una fecha con clases primero", Toast.LENGTH_SHORT).show()
+            else ToastHelper.mostrarMensaje(this, "Elige una fecha con clases primero")
         }
 
         configurarIconosMotivacion()
@@ -77,7 +83,6 @@ class TareaActivity : AppCompatActivity() {
         val sdf = SimpleDateFormat("EEE", Locale("es", "MX"))
         var dia = sdf.format(calendar.time).lowercase()
 
-        // Normalizar día para que coincida con la DB
         dia = when {
             dia.contains("lu") -> "Lun"
             dia.contains("ma") -> "Mar"
@@ -89,11 +94,10 @@ class TareaActivity : AppCompatActivity() {
         }
 
         listaAlumnosFiltrados.clear()
-        val idsAgregados = mutableSetOf<String>() // PARA EVITAR REPETIDOS
+        val idsAgregados = mutableSetOf<String>()
 
         btnAlumno.text = "Buscando tus alumnos..."
 
-        // FILTRO ESTRICTO: Solo donde teacherId sea igual al mío
         db.collection("classes")
             .whereEqualTo("teacherId", teacherId)
             .get()
@@ -105,12 +109,8 @@ class TareaActivity : AppCompatActivity() {
                     val hora = doc.getString("time") ?: ""
                     val tipo = doc.getString("type") ?: ""
 
-                    // Verificamos si es clase fija de hoy O evento especial de hoy
                     if ((tipo == "fija" && dbDay == dia) || dbDate == fechaComp) {
-
-                        // LLAVE ÚNICA: Alumno + Hora (Para no repetir si tiene 2 registros)
                         val llave = "$sId-$hora"
-
                         if (!idsAgregados.contains(llave)) {
                             listaAlumnosFiltrados.add(doc.data)
                             idsAgregados.add(llave)
@@ -142,14 +142,40 @@ class TareaActivity : AppCompatActivity() {
             }.show()
     }
 
+    // 🔥 CARGA DINÁMICA DE LAS 4 INSIGNIAS DE TAREA
     private fun configurarIconosMotivacion() {
-        val icons = listOf<ImageView>(findViewById(R.id.icono1), findViewById(R.id.icono2), findViewById(R.id.icono3), findViewById(R.id.icono4))
-        icons.forEach { it.alpha = 0.3f }
+        val icons = listOf<ImageView>(
+            findViewById(R.id.icono1), findViewById(R.id.icono2),
+            findViewById(R.id.icono3), findViewById(R.id.icono4)
+        )
+
+        val nombresInsignias = insigniasTarea.keys.toList()
+
         icons.forEachIndexed { i, img ->
+            val nombreReal = nombresInsignias[i]
+            val clave = insigniasTarea[nombreReal]?.first ?: ""
+
+            // Construimos el nombre del PNG (Nivel 1 por defecto en la interfaz)
+            val nombreArchivo = "${clave}1"
+            val imageResId = resources.getIdentifier(nombreArchivo, "drawable", packageName)
+
+            if (imageResId != 0) {
+                img.setImageResource(imageResId)
+            }
+
             img.setOnClickListener {
+                if (studentIdSeleccionado.isEmpty()) {
+                    ToastHelper.mostrarMensaje(this, "Selecciona primero un alumno")
+                    return@setOnClickListener
+                }
+
                 icons.forEach { it.alpha = 0.3f }
                 img.alpha = 1.0f
-                insigniaMotivacional = "Insignia Tarea ${i + 1}"
+
+                insigniaSeleccionada = nombreReal
+                claveInsigniaSeleccionada = clave
+
+                ToastHelper.mostrarMensaje(this, "Recompensa: $nombreReal")
             }
         }
     }
@@ -160,26 +186,32 @@ class TareaActivity : AppCompatActivity() {
             return
         }
 
+        findViewById<AppCompatButton>(R.id.btnIngresarTarea).isEnabled = false
+
+        // 🔥 Guardamos la promesa de la insignia en la base de datos
         val tarea = hashMapOf(
             "studentId" to studentIdSeleccionado,
             "studentName" to btnAlumno.text.toString(),
             "teacherId" to teacherId,
             "title" to titulo,
             "description" to notas,
-            "motivationInsignia" to insigniaMotivacional,
+            "motivationInsigniaName" to insigniaSeleccionada,     // Ej: "Tiempo Invertido"
+            "motivationInsigniaKey" to claveInsigniaSeleccionada, // Ej: "tiempoinvertido"
             "dateAssigned" to btnFecha.text.toString(),
             "status" to "Pendiente",
             "createdAt" to com.google.firebase.Timestamp.now()
         )
 
         db.collection("tasks").add(tarea).addOnSuccessListener {
-            Toast.makeText(this, "¡Tarea asignada con éxito!", Toast.LENGTH_SHORT).show()
+            ToastHelper.mostrarMensaje(this, "¡Tarea asignada con éxito!")
 
-            // Ir al perfil del alumno para verificar
             val intent = Intent(this, PerfilAlumnoActivity::class.java)
             intent.putExtra("STUDENT_ID", studentIdSeleccionado)
             startActivity(intent)
             finish()
+        }.addOnFailureListener {
+            findViewById<AppCompatButton>(R.id.btnIngresarTarea).isEnabled = true
+            ToastHelper.mostrarMensaje(this, "Error al guardar tarea")
         }
     }
 }

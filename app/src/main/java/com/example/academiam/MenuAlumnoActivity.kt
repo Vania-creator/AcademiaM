@@ -25,7 +25,7 @@ class MenuAlumnoActivity : AppCompatActivity() {
         studentId = intent.getStringExtra("STUDENT_ID") ?: ""
 
         if (studentId.isEmpty()) {
-            Toast.makeText(this, "Error de sesión", Toast.LENGTH_SHORT).show()
+            ToastHelper.mostrarMensaje(this, "Error de sesión")
             finish()
             return
         }
@@ -153,10 +153,16 @@ class MenuAlumnoActivity : AppCompatActivity() {
         val alertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        // Llenamos los datos
+        // Llenamos los datos básicos
         dialogView.findViewById<TextView>(R.id.dialogTituloTarea).text = currentTaskTitle
         dialogView.findViewById<TextView>(R.id.dialogDescTarea).text = currentTaskDesc
-        dialogView.findViewById<TextView>(R.id.dialogInsigniaTarea).text = "🏅 $currentTaskInsignia"
+
+        // 🔥 USAMOS LOS NUEVOS IDs DEL XML ACTUALIZADO
+        val txtRecompensa = dialogView.findViewById<TextView>(R.id.txtInfoRecompensaDialog)
+        val imgInsignia = dialogView.findViewById<ImageView>(R.id.imgInsigniaDialog)
+
+        txtRecompensa.text = "Recompensa:\n🏅 $currentTaskInsignia"
+        imgInsignia.setImageResource(R.drawable.logo) // Muestra el logo por defecto aquí de forma rápida
 
         // Botón Cerrar
         dialogView.findViewById<AppCompatButton>(R.id.btnCerrarDialogTarea).setOnClickListener {
@@ -178,14 +184,14 @@ class MenuAlumnoActivity : AppCompatActivity() {
         db.collection("tasks").document(currentTaskId)
             .update("status", "Hecha")
             .addOnSuccessListener {
-                Toast.makeText(this, "¡Felicidades! Tarea completada", Toast.LENGTH_SHORT).show()
+                ToastHelper.mostrarMensaje(this, "¡Felicidades! Tarea completada")
                 dialog.dismiss()
 
                 // Recargamos la tarjeta para que se ponga verde y desaparezca el botón
                 cargarUltimaTarea()
             }
             .addOnFailureListener {
-                Toast.makeText(this, "Error al actualizar", Toast.LENGTH_SHORT).show()
+                ToastHelper.mostrarMensaje(this, "Error al actualizar")
             }
     }
 

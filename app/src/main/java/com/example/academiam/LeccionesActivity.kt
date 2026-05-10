@@ -55,10 +55,10 @@ class LeccionesActivity : AppCompatActivity() {
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             // Este error saldrá si faltó configurar el Manifest
-            Toast.makeText(this, "Error: EjercicioNotasActivity no está en el Manifest", Toast.LENGTH_LONG).show()
+            ToastHelper.mostrarMensaje(this, "Error: EjercicioNotasActivity no está en el Manifest")
         } catch (e: Exception) {
             // Este error saldrá si hay otro problema crítico (como falta de permisos de micrófono)
-            Toast.makeText(this, "Error al abrir: ${e.message}", Toast.LENGTH_LONG).show()
+            ToastHelper.mostrarMensaje(this, "Error al abrir: ${e.message}")
             e.printStackTrace()
         }
     }

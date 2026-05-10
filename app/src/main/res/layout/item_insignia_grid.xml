@@ -1,26 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center"
+    android:layout_margin="6dp"
     android:orientation="vertical"
-    android:padding="8dp">
-
-    <ImageView
-        android:id="@+id/imgInsignia"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:background="@drawable/circulo_gris"
-        android:padding="12dp"
-        android:src="@android:drawable/btn_star_big_on"
-        android:alpha="0.3" /> <TextView
-    android:id="@+id/txtNombreInsignia"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="6dp"
     android:gravity="center"
-    android:text="Insignia"
-    android:textColor="#222222"
-    android:textSize="11sp"
-    android:textStyle="bold" />
+    android:padding="8dp"
+    android:foreground="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
+
+    <FrameLayout
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/circulo_blanco"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/imgInsignia"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerInside"
+            android:adjustViewBounds="true"
+            android:padding="12dp"
+            android:src="@drawable/logo" />
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/txtNombreInsignia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nombre"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:textColor="#173548"
+        android:gravity="center"
+        android:lines="2"
+        android:ellipsize="end"/>
+
 </LinearLayout>

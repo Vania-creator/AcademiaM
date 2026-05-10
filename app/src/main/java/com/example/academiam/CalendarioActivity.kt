@@ -46,7 +46,7 @@ class CalendarioActivity : AppCompatActivity() {
 
         btnSeleccionarFecha.setOnClickListener {
             txtFechaConfirmada.text = "Fecha confirmada: $fechaCorta"
-            Toast.makeText(this, "Fecha seleccionada: $fechaCorta", Toast.LENGTH_SHORT).show()
+            ToastHelper.mostrarMensaje(this, "Fecha seleccionada: $fechaCorta")
 
             val intent = Intent()
             intent.putExtra("fechaSeleccionada", fechaParaMostrar)
