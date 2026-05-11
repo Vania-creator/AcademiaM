@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F4F0E8"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fillViewport="true">
 
     <LinearLayout
@@ -57,7 +58,7 @@
                     android:padding="18dp"
                     android:scaleType="centerInside"
                     android:src="@android:drawable/ic_menu_myplaces"
-                    android:tint="#6F655D" />
+                    app:tint="#6F655D" />
 
                 <LinearLayout
                     android:layout_marginStart="14dp"

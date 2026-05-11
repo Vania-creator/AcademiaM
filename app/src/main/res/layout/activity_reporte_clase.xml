@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="#F4F0E8">
+    android:background="#F4F0E8"
+    tools:context=".ReporteClaseActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -45,7 +48,6 @@
                     android:src="@drawable/logo"
                     android:scaleType="fitCenter" />
             </LinearLayout>
-
         </FrameLayout>
 
         <TextView
@@ -57,7 +59,7 @@
             android:gravity="center"
             android:padding="12dp"
             android:text="Completa los campos"
-            android:textColor="#B71C1C"
+            android:textColor="#FFFFFF"
             android:textStyle="bold"
             android:visibility="gone" />
 
@@ -84,7 +86,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:background="@drawable/campo_busqueda"
-                android:drawableStart="@android:drawable/ic_menu_my_calendar"
+                app:drawableStartCompat="@android:drawable/ic_menu_my_calendar"
                 android:drawablePadding="12dp"
                 android:gravity="center_vertical"
                 android:paddingStart="18dp"
@@ -131,7 +133,6 @@
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:layout_marginEnd="6dp">
-
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -139,7 +140,6 @@
                         android:textColor="#6F655D"
                         android:textSize="12sp"
                         android:layout_marginBottom="4dp" />
-
                     <TextView
                         android:id="@+id/txtTipoClaseAuto"
                         android:layout_width="match_parent"
@@ -157,7 +157,6 @@
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:layout_marginStart="6dp">
-
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -165,7 +164,6 @@
                         android:textColor="#6F655D"
                         android:textSize="12sp"
                         android:layout_marginBottom="4dp" />
-
                     <TextView
                         android:id="@+id/txtInstrumentoAuto"
                         android:layout_width="match_parent"
@@ -185,12 +183,13 @@
                 android:text="El alumno asistió a clase"
                 android:textSize="16sp"
                 android:textColor="#263746"
-                android:buttonTint="#173548" />
+                android:buttonTint="#173548"
+                android:checked="true" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="* Si el alumno NO asistió, no es necesario llenar el cuadro de estudio ni notas."
+                android:text="* Si el alumno NO asistió, solo guarda el reporte."
                 android:textColor="#B3261E"
                 android:textSize="12sp"
                 android:paddingStart="32dp"
@@ -223,7 +222,8 @@
                 android:textColor="#263746"
                 android:textColorHint="#9A9188"
                 android:elevation="2dp"
-                android:layout_marginBottom="18dp" />
+                android:layout_marginBottom="18dp"
+                android:inputType="text" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -245,7 +245,8 @@
                 android:textColor="#263746"
                 android:textColorHint="#9A9188"
                 android:elevation="2dp"
-                android:layout_marginBottom="22dp" />
+                android:layout_marginBottom="22dp"
+                android:inputType="textMultiLine" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -264,42 +265,42 @@
 
                 <ImageView
                     android:id="@+id/imgInsignia1"
-                    android:layout_width="52dp"
-                    android:layout_height="52dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:src="@drawable/logo"
-                    android:alpha="0.45"
-                    android:padding="8dp"
+                    android:padding="6dp"
                     android:layout_margin="7dp"
+                    android:scaleType="centerInside"
                     android:background="@drawable/circulo_gris" />
 
                 <ImageView
                     android:id="@+id/imgInsignia2"
-                    android:layout_width="52dp"
-                    android:layout_height="52dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:src="@drawable/logo"
-                    android:alpha="0.45"
-                    android:padding="8dp"
+                    android:padding="6dp"
                     android:layout_margin="7dp"
+                    android:scaleType="centerInside"
                     android:background="@drawable/circulo_gris" />
 
                 <ImageView
                     android:id="@+id/imgInsignia3"
-                    android:layout_width="52dp"
-                    android:layout_height="52dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:src="@drawable/logo"
-                    android:alpha="0.45"
-                    android:padding="8dp"
+                    android:padding="6dp"
                     android:layout_margin="7dp"
+                    android:scaleType="centerInside"
                     android:background="@drawable/circulo_gris" />
 
                 <ImageView
                     android:id="@+id/imgInsignia4"
-                    android:layout_width="52dp"
-                    android:layout_height="52dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:src="@drawable/logo"
-                    android:alpha="0.45"
-                    android:padding="8dp"
+                    android:padding="6dp"
                     android:layout_margin="7dp"
+                    android:scaleType="centerInside"
                     android:background="@drawable/circulo_gris" />
             </LinearLayout>
 
@@ -315,13 +316,11 @@
                     android:layout_weight="1"
                     android:layout_marginEnd="8dp"
                     android:background="@drawable/boton_menu_animado"
-                    android:backgroundTint="@null"
                     android:text="Cancelar"
                     android:textAllCaps="false"
-                    android:textColor="#263746"
+                    android:textColor="#173548"
                     android:textStyle="bold"
-                    android:elevation="5dp"
-                    android:stateListAnimator="@null" />
+                    android:elevation="5dp" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnIngresarReporte"
@@ -330,16 +329,12 @@
                     android:layout_weight="1.25"
                     android:layout_marginStart="8dp"
                     android:background="@drawable/boton_login"
-                    android:backgroundTint="@null"
                     android:text="Guardar Reporte"
                     android:textAllCaps="false"
                     android:textColor="#FFFFFF"
                     android:textStyle="bold"
-                    android:elevation="6dp"
-                    android:stateListAnimator="@null" />
+                    android:elevation="6dp" />
             </LinearLayout>
         </LinearLayout>
-
     </LinearLayout>
-
 </ScrollView>
