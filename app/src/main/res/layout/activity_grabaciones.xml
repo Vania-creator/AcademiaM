@@ -43,10 +43,12 @@
             android:layout_marginTop="18dp"
             android:background="@drawable/error_rojo"
             android:gravity="center"
-            android:padding="12dp"
+            android:padding="16dp"
             android:text="Error"
-            android:textColor="#B71C1C"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
             android:textStyle="bold"
+            android:elevation="4dp"
             android:visibility="gone" />
 
         <LinearLayout
@@ -90,14 +92,6 @@
                         android:textSize="18sp"
                         android:fontFamily="sans-serif-medium" />
 
-                    <TextView
-                        android:id="@+id/txtInstrumentoGr"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="--"
-                        android:textColor="#6F655D"
-                        android:textSize="14sp"
-                        android:layout_marginTop="2dp" />
                 </LinearLayout>
 
                 <TextView

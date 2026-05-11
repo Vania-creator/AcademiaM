@@ -33,6 +33,7 @@ class PerfilAlumnoActivity : AppCompatActivity() {
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        ViewUtils.hacerPantallaCompleta(window)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_perfil_alumno)
 
@@ -68,19 +69,33 @@ class PerfilAlumnoActivity : AppCompatActivity() {
                 val nivel = doc.getLong("nivel") ?: 0L
                 findViewById<TextView>(R.id.txtNivelExpPerfil).text = "Nvl $nivel • $exp XP"
 
+                // 🔥 CARGA DEL AVATAR DESDE FIRESTORE
+                val imgPerfilFoto = findViewById<ImageView>(R.id.imgPerfilFoto)
+                val avatarGuardado = doc.getString("avatar") ?: "logo" // Si no tiene, pone el logo
+                val avatarResId = resources.getIdentifier(avatarGuardado, "drawable", packageName)
+
+                if (avatarResId != 0) {
+                    imgPerfilFoto.setImageResource(avatarResId)
+                } else {
+                    imgPerfilFoto.setImageResource(R.drawable.logo)
+                }
+
+                // 🔥 EVENTO CLICK PARA CAMBIAR AVATAR
+                imgPerfilFoto.setOnClickListener {
+                    mostrarDialogoAvatares(id)
+                }
+
                 val mapaProgreso = doc.get("insignias_progreso") as? Map<String, Long>
                 val containerInsignias = findViewById<LinearLayout>(R.id.containerInsignias)
                 containerInsignias.removeAllViews()
 
                 if (mapaProgreso != null && mapaProgreso.isNotEmpty()) {
                     for ((clave, nivelAlcanzado) in mapaProgreso) {
-
                         val img = ImageView(this)
                         val params = LinearLayout.LayoutParams(140, 140)
                         params.setMargins(0, 0, 16, 0)
                         img.layoutParams = params
 
-                        // Busca la imagen PNG (Ej: primersonido1.png, primersonido2.png)
                         val nombreArchivo = "${clave}${nivelAlcanzado}"
                         val imageResId = resources.getIdentifier(nombreArchivo, "drawable", packageName)
 
@@ -93,10 +108,8 @@ class PerfilAlumnoActivity : AppCompatActivity() {
                         val nombreLegible = nombresInsignias[clave] ?: clave.uppercase()
 
                         img.setOnClickListener {
-                            // 🔥 Usamos el mensaje personalizado con el logo 🔥
                             mostrarMensajeAcademia("$nombreLegible (Nivel $nivelAlcanzado)")
                         }
-
                         containerInsignias.addView(img)
                     }
                 } else {
@@ -107,6 +120,58 @@ class PerfilAlumnoActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    // 🔥 FUNCIÓN PARA SELECCIONAR Y GUARDAR AVATAR (10 opciones para alumno)
+// Dentro de PerfilAlumnoActivity.kt
+
+    private fun mostrarDialogoAvatares(studentId: String) {
+        // Creamos la lista de nombres del alumno1 al alumno10
+        val avatares = List(10) { i -> "alumno${i + 1}" }
+
+        val gridLayout = android.widget.GridLayout(this).apply {
+            columnCount = 3
+            setPadding(30, 30, 30, 30)
+            alignmentMode = android.widget.GridLayout.ALIGN_BOUNDS
+        }
+
+        val alertDialog = android.app.AlertDialog.Builder(this)
+            .setTitle("Selecciona tu Avatar")
+            .setView(gridLayout)
+            .create()
+
+        for (nombreAvatar in avatares) {
+            val img = ImageView(this)
+            val params = android.widget.GridLayout.LayoutParams()
+            params.width = 180
+            params.height = 180
+            params.setMargins(20, 20, 20, 20)
+            img.layoutParams = params
+
+            // Estilo circular para la previsualización
+            img.setBackgroundResource(R.drawable.circulo_gris)
+            img.setPadding(10, 10, 10, 10)
+            img.scaleType = ImageView.ScaleType.CENTER_CROP
+
+            val resId = resources.getIdentifier(nombreAvatar, "drawable", packageName)
+            if (resId != 0) {
+                img.setImageResource(resId)
+            } else {
+                img.setImageResource(R.drawable.logo)
+            }
+
+            img.setOnClickListener {
+                db.collection("students").document(studentId)
+                    .update("avatar", nombreAvatar)
+                    .addOnSuccessListener {
+                        ToastHelper.mostrarMensaje(this, "¡Avatar actualizado!")
+                        findViewById<ImageView>(R.id.imgPerfilFoto).setImageResource(resId)
+                        alertDialog.dismiss()
+                    }
+            }
+            gridLayout.addView(img)
+        }
+        alertDialog.show()
     }
 
     private fun cargarInsigniasYReportes(id: String) {

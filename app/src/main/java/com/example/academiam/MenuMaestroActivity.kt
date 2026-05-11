@@ -2,108 +2,123 @@ package com.example.academiam
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-
+import androidx.appcompat.widget.AppCompatButton
 import com.google.firebase.firestore.FirebaseFirestore
 
 class MenuMaestroActivity : AppCompatActivity() {
 
     private val db = FirebaseFirestore.getInstance()
-    private var teacherId: String? = null
+    private var teacherId: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        ViewUtils.hacerPantallaCompleta(window)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_menu_maestro)
 
-        // 1. Recuperamos el ID que viene desde el Login
-        teacherId = intent.getStringExtra("TEACHER_ID")
+        teacherId = intent.getStringExtra("TEACHER_ID") ?: ""
 
-        // Referencias a los componentes del XML
-        val imgPerfil = findViewById<ImageView>(R.id.imgPerfil)
-        val btnMisAlumnos = findViewById<Button>(R.id.btnMisAlumnos)
-        val btnHorario = findViewById<Button>(R.id.btnHorario)
-        val btnReporteClase = findViewById<Button>(R.id.btnReporteClase)
-        val btnAsignarRecompensa = findViewById<Button>(R.id.btnAsignarRecompensa) // Nuevo
-        val btnTarea = findViewById<Button>(R.id.btnTarea)
-        val btnSeleccionarLibro = findViewById<Button>(R.id.btnSeleccionarLibro) // Nuevo
-        val btnLogout = findViewById<Button>(R.id.btnLogout)
-
-        // 2. --- NAVEGACIÓN AL PERFIL DEL MAESTRO ---
-        imgPerfil.setOnClickListener {
-            if (teacherId != null) {
-                val intent = Intent(this, PerfilMaestroActivity::class.java)
-                intent.putExtra("TEACHER_ID", teacherId)
-                startActivity(intent)
-            } else {
-                ToastHelper.mostrarMensaje(this, "Sesión no válida")
-            }
+        if (teacherId.isEmpty()) {
+            ToastHelper.mostrarMensaje(this, "Error de sesión")
+            finish()
+            return
         }
 
-        // 3. Configuración de Clicks
-        btnMisAlumnos.setOnClickListener {
+        // Cargar datos iniciales
+        cargarDatosMenuMaestro()
+
+        // 🔥 Ir al perfil al tocar la imagen o los textos 🔥
+        val imgPerfil = findViewById<ImageView>(R.id.imgPerfil)
+        val contenedorPerfil = imgPerfil.parent as LinearLayout
+        contenedorPerfil.setOnClickListener {
+            val intent = Intent(this, PerfilMaestroActivity::class.java)
+            intent.putExtra("TEACHER_ID", teacherId)
+            startActivity(intent)
+        }
+
+        // --- CLICKS DEL MENÚ ---
+
+        findViewById<AppCompatButton>(R.id.btnMisAlumnos).setOnClickListener {
             val intent = Intent(this, MisAlumnosActivity::class.java)
             intent.putExtra("TEACHER_ID", teacherId)
-            ToastHelper.mostrarMensaje(this, "Mis alumnos")
             startActivity(intent)
         }
 
-        btnHorario.setOnClickListener {
+        findViewById<AppCompatButton>(R.id.btnHorario).setOnClickListener {
             val intent = Intent(this, HorarioActivity::class.java)
             intent.putExtra("TEACHER_ID", teacherId)
-            ToastHelper.mostrarMensaje(this, "Ver Horario")
             startActivity(intent)
         }
 
-        btnReporteClase.setOnClickListener {
+        findViewById<AppCompatButton>(R.id.btnReporteClase).setOnClickListener {
             val intent = Intent(this, ReporteClaseActivity::class.java)
             intent.putExtra("TEACHER_ID", teacherId)
-            ToastHelper.mostrarMensaje(this, "Reporte de clases")
             startActivity(intent)
         }
 
-        btnAsignarRecompensa.setOnClickListener {
+        findViewById<AppCompatButton>(R.id.btnAsignarRecompensa).setOnClickListener {
             val intent = Intent(this, AsignarRecompensaActivity::class.java)
             intent.putExtra("TEACHER_ID", teacherId)
             startActivity(intent)
-            ToastHelper.mostrarMensaje(this, "Asignar Insignias")
         }
 
-        btnTarea.setOnClickListener {
+        findViewById<AppCompatButton>(R.id.btnTarea).setOnClickListener {
             val intent = Intent(this, TareaActivity::class.java)
             intent.putExtra("TEACHER_ID", teacherId)
-            ToastHelper.mostrarMensaje(this, "Asignar Tareas")
             startActivity(intent)
         }
 
-        btnSeleccionarLibro.setOnClickListener {
+        findViewById<AppCompatButton>(R.id.btnSeleccionarLibro).setOnClickListener {
             val intent = Intent(this, LibrosActivity::class.java)
             intent.putExtra("TEACHER_ID", teacherId)
             startActivity(intent)
-            ToastHelper.mostrarMensaje(this, "Selección de Libros")
         }
 
-        btnLogout.setOnClickListener {
+        findViewById<AppCompatButton>(R.id.btnLogout).setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
-            ToastHelper.mostrarMensaje(this, "Hasta Luego")
             finish()
         }
+    }
 
-        // 4. Cargar datos básicos en el Header del Menú
-        if (teacherId != null) {
-            db.collection("teachers").document(teacherId!!).get()
-                .addOnSuccessListener { doc ->
-                    if (doc.exists()) {
-                        findViewById<TextView>(R.id.txtNombre).text = doc.getString("nombre")
-                        val lista = doc.get("instrumentos") as? List<String>
-                        findViewById<TextView>(R.id.txtInstrumento).text = lista?.joinToString(", ")
+    // 🔥 Usamos onResume para recargar la foto si el maestro la cambia en su perfil y regresa
+    override fun onResume() {
+        super.onResume()
+        if (teacherId.isNotEmpty()) {
+            cargarDatosMenuMaestro()
+        }
+    }
+
+    private fun cargarDatosMenuMaestro() {
+        val imgPerfil = findViewById<ImageView>(R.id.imgPerfil)
+        val txtNombre = findViewById<TextView>(R.id.txtNombre)
+        val txtInstrumento = findViewById<TextView>(R.id.txtInstrumento)
+
+        db.collection("teachers").document(teacherId).get()
+            .addOnSuccessListener { doc ->
+                if (doc.exists()) {
+                    txtNombre.text = doc.getString("nombre") ?: "Maestro"
+
+                    val instrumentos = doc.get("instrumentos") as? List<String>
+                    txtInstrumento.text = instrumentos?.joinToString(", ") ?: "Música"
+
+                    // 🔥 CARGA DINÁMICA DEL AVATAR 🔥
+                    val avatarGuardado = doc.getString("avatar") ?: "logo"
+                    val avatarResId = resources.getIdentifier(avatarGuardado, "drawable", packageName)
+
+                    if (avatarResId != 0) {
+                        imgPerfil.setImageResource(avatarResId)
+                    } else {
+                        imgPerfil.setImageResource(R.drawable.logo)
                     }
                 }
-        }
+            }
+            .addOnFailureListener {
+                imgPerfil.setImageResource(R.drawable.logo)
+            }
     }
 }

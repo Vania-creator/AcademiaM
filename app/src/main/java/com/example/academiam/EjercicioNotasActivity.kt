@@ -31,6 +31,7 @@ class EjercicioSecuenciaActivity : AppCompatActivity() {
     private var ultimaNotaEscuchada = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        ViewUtils.hacerPantallaCompleta(window)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ejercicio_notas)
 

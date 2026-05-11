@@ -26,6 +26,7 @@ class GrabacionesActivity : AppCompatActivity() {
     private var mediaPlayer: MediaPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        ViewUtils.hacerPantallaCompleta(window)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_grabaciones)
 
@@ -54,7 +55,7 @@ class GrabacionesActivity : AppCompatActivity() {
             .addOnSuccessListener { doc ->
                 if (doc.exists()) {
                     findViewById<TextView>(R.id.txtNombreGr).text = doc.getString("nombre")
-                    findViewById<TextView>(R.id.txtInstrumentoGr).text = doc.getString("instrumento") ?: "Instrumento no asignado"
+                    // 🔥 Se eliminó la línea del instrumento
                     findViewById<TextView>(R.id.txtRachaGr).text = "${doc.getLong("racha") ?: 0} Días"
                 }
             }

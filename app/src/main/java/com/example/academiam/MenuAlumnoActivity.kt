@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import com.google.firebase.firestore.FirebaseFirestore
@@ -19,6 +18,7 @@ class MenuAlumnoActivity : AppCompatActivity() {
     private var studentName: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        ViewUtils.hacerPantallaCompleta(window)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_menu_alumno)
 
@@ -55,6 +55,8 @@ class MenuAlumnoActivity : AppCompatActivity() {
         // Ir a Libros
         findViewById<AppCompatButton>(R.id.btnSeleccionarLibroAl).setOnClickListener {
             val intent = Intent(this, LibrosActivity::class.java)
+            // 🔥 ESTA ES LA LÍNEA QUE FALTA PARA MANDAR EL ID 🔥
+            intent.putExtra("STUDENT_ID", studentId)
             startActivity(intent)
         }
 
@@ -84,6 +86,17 @@ class MenuAlumnoActivity : AppCompatActivity() {
 
                     findViewById<TextView>(R.id.txtNombreAlumno).text = studentName
                     findViewById<TextView>(R.id.txtRachaAlumno).text = "Racha: $racha Días 🔥"
+
+                    // 🔥 CARGA DEL AVATAR DESDE FIRESTORE 🔥
+                    val avatarGuardado = doc.getString("avatar") ?: "logo"
+                    val imgPerfilAlumno = findViewById<ImageView>(R.id.imgPerfilAlumno)
+                    val avatarResId = resources.getIdentifier(avatarGuardado, "drawable", packageName)
+
+                    if (avatarResId != 0) {
+                        imgPerfilAlumno.setImageResource(avatarResId)
+                    } else {
+                        imgPerfilAlumno.setImageResource(R.drawable.logo)
+                    }
                 }
             }
     }

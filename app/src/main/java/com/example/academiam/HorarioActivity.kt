@@ -3,6 +3,7 @@ package com.example.academiam
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
@@ -42,6 +43,7 @@ class HorarioActivity : AppCompatActivity() {
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        ViewUtils.hacerPantallaCompleta(window)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_horario)
 
@@ -106,7 +108,7 @@ class HorarioActivity : AppCompatActivity() {
             doc.getString("time") ?: "00:00",
             doc.getString("type") ?: "fija",
             doc.getString("instrument") ?: "N/A",
-            doc.getString("note") ?: "" // Aquí capturamos el campo 'note'
+            doc.getString("note") ?: ""
         )
     }
 
@@ -129,6 +131,27 @@ class HorarioActivity : AppCompatActivity() {
             val txtTipo = view.findViewById<TextView>(R.id.txtTipoClaseH)
             txtTipo.text = clase.tipo.replaceFirstChar { it.uppercase() }
             if (clase.tipo.lowercase() == "reposición") txtTipo.setTextColor(android.graphics.Color.parseColor("#D32F2F"))
+
+            // 🔥 CARGAMOS EL AVATAR DINÁMICO 🔥
+            val imgAvatar = view.findViewById<ImageView>(R.id.imgAvatarHorario)
+            if (imgAvatar != null) {
+                // Hacemos una consulta rápida a Firebase para sacar su avatar
+                db.collection("students").document(clase.studentId).get()
+                    .addOnSuccessListener { doc ->
+                        if (doc.exists()) {
+                            val avatarName = doc.getString("avatar") ?: "logo"
+                            val resId = resources.getIdentifier(avatarName, "drawable", packageName)
+                            if (resId != 0) {
+                                imgAvatar.setImageResource(resId)
+                            } else {
+                                imgAvatar.setImageResource(R.drawable.logo)
+                            }
+                        }
+                    }
+                    .addOnFailureListener {
+                        imgAvatar.setImageResource(R.drawable.logo)
+                    }
+            }
 
             view.setOnClickListener {
                 val intent = Intent(this, PerfilAlumnoActivity::class.java)

@@ -15,7 +15,7 @@ class PerfilMaestroActivity : AppCompatActivity() {
     private val db = FirebaseFirestore.getInstance()
     private var teacherId: String = ""
 
-    // Listas para manejar los datos localmente (como en tu JS)
+    // Listas para manejar los datos localmente
     private var historialFiltrado = mutableListOf<Map<String, Any>>()
 
     // Variables de paginación
@@ -23,6 +23,7 @@ class PerfilMaestroActivity : AppCompatActivity() {
     private val filasPorPagina = 10
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        ViewUtils.hacerPantallaCompleta(window)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_perfil_maestro)
 
@@ -62,6 +63,22 @@ class PerfilMaestroActivity : AppCompatActivity() {
                 findViewById<TextView>(R.id.txtUsuarioMaestro).text = "User: ${doc.getString("usuario")}"
                 findViewById<TextView>(R.id.txtStatusMaestro).text = (doc.getString("status") ?: "ACTIVO").uppercase()
 
+                // 🔥 LECTURA Y CONFIGURACIÓN DEL AVATAR DEL MAESTRO 🔥
+                val imgPerfil = findViewById<ImageView>(R.id.imgPerfilFoto)
+                val avatarGuardado = doc.getString("avatar") ?: "logo"
+                val avatarResId = resources.getIdentifier(avatarGuardado, "drawable", packageName)
+
+                if (avatarResId != 0) {
+                    imgPerfil.setImageResource(avatarResId)
+                } else {
+                    imgPerfil.setImageResource(R.drawable.logo)
+                }
+
+                // Clic para cambiar avatar
+                imgPerfil.setOnClickListener {
+                    mostrarDialogoAvataresMaestro(teacherId)
+                }
+
                 // Cargar Chips de Especialidades
                 val instrumentos = doc.get("instrumentos") as? List<String>
                 val chipGroup = findViewById<ChipGroup>(R.id.groupEspecialidades)
@@ -80,7 +97,7 @@ class PerfilMaestroActivity : AppCompatActivity() {
                     val tv = TextView(this)
                     tv.text = dia
                     tv.setPadding(0, 0, 0, 0)
-                    tv.setBackgroundResource(R.drawable.circulo_negro_dia) // Tu drawable circular
+                    tv.setBackgroundResource(R.drawable.circulo_negro_dia)
                     tv.setTextColor(android.graphics.Color.WHITE)
                     tv.gravity = android.view.Gravity.CENTER
 
@@ -112,7 +129,6 @@ class PerfilMaestroActivity : AppCompatActivity() {
                     val fecha = data["date"] as? String ?: ""
                     val fechaFin = data["fechaFin"] as? String ?: ""
 
-                    // 1. Lógica de Estadísticas (Espejo de la web)
                     if (tipo == "fija") {
                         if (fechaFin.isEmpty() || fechaFin >= todayStr) fijos++
                     } else if (tipo == "muestra") {
@@ -120,21 +136,17 @@ class PerfilMaestroActivity : AppCompatActivity() {
                         else muestrasFuturas++
                     }
 
-                    // 2. Filtro para el Historial (Excluir clases fijas activas)
                     if (tipo != "fija") {
                         historialFiltrado.add(data)
                     }
                 }
 
-                // Actualizar contadores en la UI
                 findViewById<TextView>(R.id.statAlumnos).text = fijos.toString()
                 findViewById<TextView>(R.id.statPendientes).text = muestrasFuturas.toString()
                 findViewById<TextView>(R.id.statPasadas).text = muestrasPasadas.toString()
 
-                // --- ORDENAMIENTO POR FECHA (MÁS RECIENTE ARRIBA) ---
                 historialFiltrado.sortByDescending { it["date"] as? String ?: "" }
 
-                // Iniciar renderizado
                 paginaActual = 1
                 renderizarTablaHistorial()
             }
@@ -155,7 +167,6 @@ class PerfilMaestroActivity : AppCompatActivity() {
             return
         }
 
-        // Cálculo de sub-lista para paginación
         val totalItems = historialFiltrado.size
         val totalPaginas = Math.ceil(totalItems.toDouble() / filasPorPagina).toInt()
 
@@ -166,7 +177,6 @@ class PerfilMaestroActivity : AppCompatActivity() {
         val subLista = historialFiltrado.subList(inicio, fin)
         txtPagina.text = "Página $paginaActual de $totalPaginas"
 
-        // Inflar cada fila del historial
         for (clase in subLista) {
             val view = LayoutInflater.from(this).inflate(R.layout.item_historial_maestro, container, false)
 
@@ -178,23 +188,69 @@ class PerfilMaestroActivity : AppCompatActivity() {
             val tvTipo = view.findViewById<TextView>(R.id.histTipo)
             tvTipo.text = tipo
 
-            // Colores dinámicos para los badges
             when(tipo.lowercase()) {
                 "muestra" -> {
-                    tvTipo.setBackgroundColor(android.graphics.Color.parseColor("#7B1FA2")) // Morado
+                    tvTipo.setBackgroundColor(android.graphics.Color.parseColor("#7B1FA2"))
                     tvTipo.setTextColor(android.graphics.Color.WHITE)
                 }
                 "unica" -> {
-                    tvTipo.setBackgroundColor(android.graphics.Color.parseColor("#1976D2")) // Azul
+                    tvTipo.setBackgroundColor(android.graphics.Color.parseColor("#1976D2"))
                     tvTipo.setTextColor(android.graphics.Color.WHITE)
                 }
                 else -> {
-                    tvTipo.setBackgroundColor(android.graphics.Color.parseColor("#EEEEEE")) // Gris
+                    tvTipo.setBackgroundColor(android.graphics.Color.parseColor("#EEEEEE"))
                     tvTipo.setTextColor(android.graphics.Color.BLACK)
                 }
             }
-
             container.addView(view)
         }
+    }
+
+    // 🔥 MENÚ DE SELECCIÓN DE AVATAR DEL MAESTRO 🔥
+    private fun mostrarDialogoAvataresMaestro(teacherId: String) {
+        val avatares = List(6) { i -> "maestro${i + 1}" }
+
+        val gridLayout = android.widget.GridLayout(this).apply {
+            columnCount = 3
+            setPadding(30, 30, 30, 30)
+            alignmentMode = android.widget.GridLayout.ALIGN_BOUNDS
+        }
+
+        val alertDialog = android.app.AlertDialog.Builder(this)
+            .setTitle("Elegir Avatar de Maestro")
+            .setView(gridLayout)
+            .create()
+
+        for (nombreAvatar in avatares) {
+            val img = ImageView(this)
+            val params = android.widget.GridLayout.LayoutParams()
+            params.width = 180
+            params.height = 180
+            params.setMargins(20, 20, 20, 20)
+            img.layoutParams = params
+
+            img.setBackgroundResource(R.drawable.circulo_gris)
+            img.setPadding(10, 10, 10, 10)
+            img.scaleType = ImageView.ScaleType.CENTER_CROP
+
+            val resId = resources.getIdentifier(nombreAvatar, "drawable", packageName)
+            if (resId != 0) {
+                img.setImageResource(resId)
+            } else {
+                img.setImageResource(R.drawable.logo)
+            }
+
+            img.setOnClickListener {
+                db.collection("teachers").document(teacherId)
+                    .update("avatar", nombreAvatar)
+                    .addOnSuccessListener {
+                        ToastHelper.mostrarMensaje(this, "Perfil actualizado")
+                        findViewById<ImageView>(R.id.imgPerfilFoto).setImageResource(resId)
+                        alertDialog.dismiss()
+                    }
+            }
+            gridLayout.addView(img)
+        }
+        alertDialog.show()
     }
 }

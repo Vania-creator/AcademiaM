@@ -4,22 +4,23 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import com.google.firebase.firestore.FirebaseFirestore
 
+// 🔥 MODIFICAMOS EL DATA CLASS PARA GUARDAR AVATAR Y VARIOS INSTRUMENTOS
 data class Alumno(
     val id: String,
     val nombre: String,
-    val instrumentoReal: String,
-    val racha: Long
+    val instrumentos: MutableSet<String>, // Ahora guarda más de uno
+    val racha: Long,
+    val avatar: String
 )
 
 class MisAlumnosActivity : AppCompatActivity() {
@@ -30,6 +31,7 @@ class MisAlumnosActivity : AppCompatActivity() {
     private var mostrandoTodos = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        ViewUtils.hacerPantallaCompleta(window)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mis_alumnos)
 
@@ -112,6 +114,8 @@ class MisAlumnosActivity : AppCompatActivity() {
             txtSinAlumnos.visibility = View.GONE
         }
 
+        val etBuscar = findViewById<EditText>(R.id.etBuscarAlumno)
+
         for (classDoc in query) {
             val idAlumno = classDoc.getString("studentId")
             val instrumentoClase = classDoc.getString("instrument") ?: "N/A"
@@ -119,17 +123,28 @@ class MisAlumnosActivity : AppCompatActivity() {
             if (idAlumno != null) {
                 db.collection("students").document(idAlumno).get().addOnSuccessListener { studentDoc ->
                     if (studentDoc.exists()) {
-                        val alumno = Alumno(
-                            idAlumno,
-                            studentDoc.getString("nombre") ?: "Desconocido",
-                            instrumentoClase,
-                            studentDoc.getLong("racha") ?: 0
-                        )
+                        val avatarGuardado = studentDoc.getString("avatar") ?: "logo"
 
-                        if (!listaCompletaAlumnos.any { it.id == idAlumno && it.instrumentoReal == instrumentoClase }) {
-                            listaCompletaAlumnos.add(alumno)
+                        // 🔥 REVISAMOS SI EL ALUMNO YA ESTÁ EN LA LISTA
+                        val alumnoExistente = listaCompletaAlumnos.find { it.id == idAlumno }
+
+                        if (alumnoExistente != null) {
+                            // Si ya existe, solo le agregamos el nuevo instrumento
+                            alumnoExistente.instrumentos.add(instrumentoClase)
+                        } else {
+                            // Si no existe, lo creamos
+                            val nuevoAlumno = Alumno(
+                                id = idAlumno,
+                                nombre = studentDoc.getString("nombre") ?: "Desconocido",
+                                instrumentos = mutableSetOf(instrumentoClase),
+                                racha = studentDoc.getLong("racha") ?: 0,
+                                avatar = avatarGuardado
+                            )
+                            listaCompletaAlumnos.add(nuevoAlumno)
                         }
-                        filtrarYMostrarAlumnos("", container, txtSinAlumnos)
+
+                        // Mantenemos el filtro que el usuario tenga escrito actualmente
+                        filtrarYMostrarAlumnos(etBuscar.text.toString(), container, txtSinAlumnos)
                     }
                 }
             }
@@ -142,7 +157,6 @@ class MisAlumnosActivity : AppCompatActivity() {
             it.nombre.contains(query, ignoreCase = true)
         }
 
-        // Si después de filtrar no hay nada, mostramos el mensaje
         if (listaFiltrada.isEmpty()) {
             txtSinAlumnos.visibility = View.VISIBLE
             if (query.isNotEmpty()) {
@@ -156,9 +170,21 @@ class MisAlumnosActivity : AppCompatActivity() {
 
         for (alumno in listaFiltrada) {
             val itemView = LayoutInflater.from(this).inflate(R.layout.item_alumno_maestro, container, false)
+
             itemView.findViewById<TextView>(R.id.txtNombreAlumno).text = alumno.nombre
-            itemView.findViewById<TextView>(R.id.txtInstrumentoAlumno).text = alumno.instrumentoReal
+            // 🔥 UNIMOS LOS INSTRUMENTOS CON COMA (Ej: "Piano, Canto")
+            itemView.findViewById<TextView>(R.id.txtInstrumentoAlumno).text = alumno.instrumentos.joinToString(", ")
             itemView.findViewById<TextView>(R.id.txtRacha).text = "🔥 ${alumno.racha} Días"
+
+            // 🔥 CARGAMOS EL AVATAR DINÁMICO
+            val imgAvatar = itemView.findViewById<ImageView>(R.id.imgAvatarAlumno)
+            val resId = resources.getIdentifier(alumno.avatar, "drawable", packageName)
+
+            if (resId != 0) {
+                imgAvatar.setImageResource(resId)
+            } else {
+                imgAvatar.setImageResource(R.drawable.logo)
+            }
 
             itemView.setOnClickListener {
                 val intent = Intent(this, PerfilAlumnoActivity::class.java)

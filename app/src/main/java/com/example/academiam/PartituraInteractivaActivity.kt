@@ -7,6 +7,7 @@ import android.media.MediaRecorder
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Environment
+import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -20,8 +21,10 @@ import be.tarsos.dsp.AudioDispatcher
 import be.tarsos.dsp.io.android.AudioDispatcherFactory
 import be.tarsos.dsp.pitch.PitchDetectionHandler
 import be.tarsos.dsp.pitch.PitchProcessor
+import com.google.firebase.firestore.FirebaseFirestore
 import java.io.File
 import kotlin.math.ln
+import kotlin.math.max
 import kotlin.math.roundToInt
 
 class PartituraInteractivaActivity : AppCompatActivity() {
@@ -37,17 +40,20 @@ class PartituraInteractivaActivity : AppCompatActivity() {
     private lateinit var btnAtras: AppCompatButton
     private lateinit var btnGrabar: AppCompatButton
     private lateinit var ivPartitura: ImageView
-    // Cambia o añade estas variables
-    private var ultimoAciertoMs: Long = 0
-    private val COOLDOWN_NOTAS_MS = 250 // Tiempo mínimo entre notas (en milisegundos)
+    private lateinit var btnRepetir: AppCompatButton
 
+    // Lógica del juego y Firestore
+    private var ultimoAciertoMs: Long = 0
+    private val COOLDOWN_NOTAS_MS = 250
     private val CODIGO_PERMISO_MIC = 1001
 
-    // Lógica del juego
     private var melodia = ArrayList<String>()
     private var indiceActual = 0
     private var ultimaNotaEscuchada = ""
     private var estaPreparado = false
+    private var erroresCometidos = 0
+    private var studentId = ""
+    private var juegoTerminado = false
 
     // Lógica de grabación local
     private var mediaRecorder: MediaRecorder? = null
@@ -55,9 +61,14 @@ class PartituraInteractivaActivity : AppCompatActivity() {
     private var timerGrabacion: CountDownTimer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        ViewUtils.hacerPantallaCompleta(window)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_partitura_interactiva)
 
+        // RECUPERAMOS EL ID DEL ALUMNO
+        studentId = intent.getStringExtra("STUDENT_ID") ?: ""
+
+        // Referencias UI
         framePartitura = findViewById(R.id.framePartitura)
         viewBarra = findViewById(R.id.viewBarra)
         tvNotaEscuchada = findViewById(R.id.tvNotaEscuchada)
@@ -66,19 +77,18 @@ class PartituraInteractivaActivity : AppCompatActivity() {
         btnAtras = findViewById(R.id.btnAtras)
         btnGrabar = findViewById(R.id.btnGrabar)
         ivPartitura = findViewById(R.id.ivPartitura)
+        btnRepetir = findViewById(R.id.btnRepetir)
 
-        // 1. Recibir Título
         val titulo = intent.getStringExtra("TITULO_CANCION") ?: "Práctica Libre"
         findViewById<TextView>(R.id.tvTituloCancion).text = titulo
 
-        // 2. Recibir Imagen Dinámica
-        val imagenResId = intent.getIntExtra("IMAGEN_PARTITURA", R.drawable.logo) // Cambia esto si tienes un logo por defecto
+        val imagenResId = intent.getIntExtra("IMAGEN_PARTITURA", R.drawable.logo)
         ivPartitura.setImageResource(imagenResId)
 
-        // 🔥 FUNCIONES DE LOS BOTONES
-        btnAtras.setOnClickListener {
-            finish()
-        }
+        // Clicks
+        btnAtras.setOnClickListener { finish() }
+
+        btnRepetir.setOnClickListener { reiniciarJuego() }
 
         btnGrabar.setOnClickListener {
             if (mediaRecorder == null) {
@@ -88,7 +98,7 @@ class PartituraInteractivaActivity : AppCompatActivity() {
             }
         }
 
-        // 3. Recibir Secuencia
+        // Iniciar melodía
         val notasArray = intent.getStringArrayListExtra("SECUENCIA_NOTAS")
         if (notasArray != null && notasArray.isNotEmpty()) {
             melodia = ArrayList(notasArray)
@@ -102,10 +112,27 @@ class PartituraInteractivaActivity : AppCompatActivity() {
         }
     }
 
-    // --- LÓGICA DE GRABACIÓN LOCAL (SIN FIREBASE) ---
+    private fun reiniciarJuego() {
+        if (::dispatcher.isInitialized && !dispatcher.isStopped) {
+            dispatcher.stop()
+        }
+
+        indiceActual = 0
+        erroresCometidos = 0
+        juegoTerminado = false
+        estaPreparado = false
+        ultimoAciertoMs = 0
+
+        tvFeedback.text = "¡Listo de nuevo!"
+        tvFeedback.setTextColor(Color.BLACK)
+        tvNotaEscuchada.text = "Esperando nota..."
+        btnRepetir.visibility = View.GONE
+
+        moverBarraVisual()
+        iniciarCuentaRegresiva()
+    }
 
     private fun iniciarGrabacion() {
-        // 🔥 Creamos una carpeta segura en el almacenamiento del teléfono
         val directorio = getExternalFilesDir(Environment.DIRECTORY_MUSIC)
         val nombreArchivo = "Practica_${System.currentTimeMillis()}.3gp"
         rutaAudio = "${directorio?.absolutePath}/$nombreArchivo"
@@ -119,7 +146,6 @@ class PartituraInteractivaActivity : AppCompatActivity() {
             try {
                 prepare()
                 start()
-
                 btnGrabar.setBackgroundColor(Color.GRAY)
 
                 timerGrabacion = object : CountDownTimer(30000, 1000) {
@@ -130,7 +156,6 @@ class PartituraInteractivaActivity : AppCompatActivity() {
                         detenerYGuardarAudio()
                     }
                 }.start()
-
             } catch (e: Exception) {
                 Toast.makeText(this@PartituraInteractivaActivity, "Error al iniciar grabadora: ${e.message}", Toast.LENGTH_SHORT).show()
             }
@@ -139,16 +164,12 @@ class PartituraInteractivaActivity : AppCompatActivity() {
 
     private fun detenerYGuardarAudio() {
         try {
-            // Apagamos la grabadora
             timerGrabacion?.cancel()
             mediaRecorder?.stop()
             mediaRecorder?.release()
             mediaRecorder = null
 
-            // 🔥 Avisamos que se guardó localmente
             Toast.makeText(this, "¡Audio guardado exitosamente!", Toast.LENGTH_LONG).show()
-
-            // Restauramos el botón
             btnGrabar.text = "🔴 Grabar Nueva Práctica"
             btnGrabar.isEnabled = true
             btnGrabar.setBackgroundColor(Color.parseColor("#D32F2F"))
@@ -159,18 +180,16 @@ class PartituraInteractivaActivity : AppCompatActivity() {
         }
     }
 
-    // --- LÓGICA DE PARTITURA INTERACTIVA ---
-
     private fun iniciarCuentaRegresiva() {
         tvFeedback.text = "¡Prepárate!"
         tvFeedback.setTextColor(Color.parseColor("#FF9800"))
+        erroresCometidos = 0
 
         object : CountDownTimer(3000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val segundos = millisUntilFinished / 1000 + 1
                 tvFeedback.text = "Empezamos en... $segundos"
             }
-
             override fun onFinish() {
                 estaPreparado = true
                 actualizarTextoTurno()
@@ -186,30 +205,14 @@ class PartituraInteractivaActivity : AppCompatActivity() {
         }
     }
 
-    // --- ANIMACIÓN DE LA BARRA (ACTUALIZADA) ---
     private fun moverBarraVisual() {
         framePartitura.post {
             val anchoTotal = framePartitura.width.toFloat()
-
-            // 1. Calcular el espacio muerto (Clave de Sol) y el espacio útil
-            // 0.18f = Ignora el primer 18% de la imagen (ajusta este número si necesitas que empiece más a la derecha o izquierda)
             val margenInicial = anchoTotal * 0.18f
-            // 0.05f = Deja un 5% de margen al final para que la última nota no quede pegada al marco
             val margenFinal = anchoTotal * 0.05f
-
             val espacioParaNotas = anchoTotal - margenInicial - margenFinal
-
-            // 2. Calcular cuánto avanza por cada nota
-            val tamañoPaso = if (melodia.size > 1) {
-                espacioParaNotas / (melodia.size - 1)
-            } else {
-                0f
-            }
-
-            // 3. Asegurar que al terminar la canción la barra se quede en la última nota
+            val tamañoPaso = if (melodia.size > 1) espacioParaNotas / (melodia.size - 1) else 0f
             val indiceSeguro = if (indiceActual >= melodia.size) melodia.size - 1 else indiceActual
-
-            // 4. Mover la barra a la posición exacta
             val nuevaPosicionX = margenInicial + (tamañoPaso * indiceSeguro)
 
             viewBarra.animate()
@@ -262,9 +265,7 @@ class PartituraInteractivaActivity : AppCompatActivity() {
             dispatcher.addAudioProcessor(processor)
             Thread(dispatcher, "Audio Dispatcher").start()
         } catch (e: Exception) {
-            runOnUiThread {
-                ToastHelper.mostrarMensaje(this, "Error al iniciar micrófono: ${e.message}")
-            }
+            runOnUiThread { ToastHelper.mostrarMensaje(this, "Error al iniciar micrófono") }
         }
     }
 
@@ -276,31 +277,93 @@ class PartituraInteractivaActivity : AppCompatActivity() {
 
         if (indiceActual >= melodia.size) return
 
-        // 1. Filtro de tiempo: Si intentas tocar antes de que pasen 250ms, el sistema ignora el input.
-        // Esto evita que una sola pulsación larga se registre como 10 aciertos.
         if (tiempoActual - ultimoAciertoMs < COOLDOWN_NOTAS_MS) return
 
         val notaObjetivoActual = melodia[indiceActual]
 
-        // 2. Verificación de la nota
         if (notaDetectada.startsWith(notaObjetivoActual)) {
-            // Guardamos el momento exacto del acierto para habilitar el siguiente disparo
             ultimoAciertoMs = tiempoActual
-
             indiceActual++
             moverBarraVisual()
 
             if (indiceActual == melodia.size) {
                 tvFeedback.text = "¡COMPLETADO! 🎉"
                 tvFeedback.setTextColor(Color.parseColor("#4CAF50"))
-                tvSecuenciaNotas.text = "¡Bien hecho!"
+                tvSecuenciaNotas.text = "Errores cometidos: $erroresCometidos"
                 tvNotaEscuchada.text = "Has terminado la secuencia."
+
+                // Mostramos el botón de repetir
+                runOnUiThread {
+                    btnRepetir.visibility = View.VISIBLE
+                }
 
                 if (::dispatcher.isInitialized && !dispatcher.isStopped) {
                     dispatcher.stop()
                 }
+
+                evaluarYOthorgarInsignia()
+
             } else {
                 actualizarTextoTurno()
+            }
+        } else {
+            ultimoAciertoMs = tiempoActual
+            erroresCometidos++
+            tvFeedback.text = "¡Ups! Era $notaObjetivoActual"
+            tvFeedback.setTextColor(Color.RED)
+        }
+    }
+
+    private fun evaluarYOthorgarInsignia() {
+        if (juegoTerminado) return
+
+        if (studentId.isEmpty()) {
+            Log.e("ERROR_GAME", "El studentId está vacío. No se puede dar insignia.")
+            ToastHelper.mostrarMensaje(this, "Error: No se pudo identificar al alumno.")
+            return
+        }
+
+        juegoTerminado = true
+        val db = FirebaseFirestore.getInstance()
+        val docRef = db.collection("students").document(studentId)
+        val claveInsignia = "teclasmaestras"
+        val nombreInsignia = "Teclas Maestras"
+
+        docRef.get().addOnSuccessListener { snapshot ->
+            if (snapshot.exists()) {
+                val expActual = snapshot.getLong("expTotal") ?: 0L
+
+                val insignias = snapshot.get("insignias_progreso") as? Map<String, Long> ?: emptyMap()
+                val nivelActualInsignia = insignias[claveInsignia] ?: 0L
+
+                if (nivelActualInsignia >= 3) {
+                    ToastHelper.mostrarMensaje(this, "¡Ya obtuviste la insignia de máximo nivel!")
+                    return@addOnSuccessListener
+                }
+
+                val nivelMerecido = if (erroresCometidos == 0) 3L else 1L
+                val nivelFinal = maxOf(nivelActualInsignia, nivelMerecido)
+
+                if (nivelFinal > nivelActualInsignia) {
+                    val xpGanada = if (erroresCometidos == 0) 250L else 80L
+                    val nuevaExp = expActual + xpGanada
+                    val nuevoNivelGeneral = (nuevaExp / 500).toInt()
+
+                    val actualizaciones = hashMapOf<String, Any>(
+                        "expTotal" to nuevaExp,
+                        "nivel" to nuevoNivelGeneral,
+                        "insignias_progreso.$claveInsignia" to nivelFinal
+                    )
+
+                    docRef.update(actualizaciones).addOnSuccessListener {
+                        val mensaje = if (nivelFinal == 3L)
+                            "¡Ejecución Perfecta! Ganaste: $nombreInsignia Nivel 3 🏅"
+                        else "¡Buen intento! Ganaste: $nombreInsignia Nivel 1"
+                        ToastHelper.mostrarMensaje(this, mensaje)
+                    }
+                } else {
+                    ToastHelper.mostrarMensaje(this, "¡Terminado! Sigue practicando para subir de nivel.")
+                }
             }
         }
     }
@@ -314,11 +377,9 @@ class PartituraInteractivaActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        // Liberar motor de audio
         if (::dispatcher.isInitialized && !dispatcher.isStopped) {
             dispatcher.stop()
         }
-        // Liberar grabadora si se salió sin detenerla
         mediaRecorder?.release()
         timerGrabacion?.cancel()
     }

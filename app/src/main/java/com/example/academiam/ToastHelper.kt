@@ -26,5 +26,7 @@ object ToastHelper {
         toast.setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 150)
 
         toast.show()
+
     }
+
 }

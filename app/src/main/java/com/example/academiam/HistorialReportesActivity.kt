@@ -17,11 +17,11 @@ class HistorialReportesActivity : AppCompatActivity() {
 
     private val db = FirebaseFirestore.getInstance()
 
-    // Lista maestra para guardar todo y no tener que descargar de Firebase cada vez que busques
     private val listaCompletaReportes = mutableListOf<Map<String, Any>>()
     private lateinit var container: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        ViewUtils.hacerPantallaCompleta(window)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_historial_reportes)
 

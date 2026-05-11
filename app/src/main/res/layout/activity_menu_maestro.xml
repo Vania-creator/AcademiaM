@@ -58,10 +58,9 @@
                     android:layout_height="78dp"
                     android:background="@drawable/circulo_gris"
                     android:contentDescription="Perfil"
-                    android:padding="18dp"
-                    android:scaleType="centerInside"
-                    android:src="@android:drawable/ic_menu_edit"
-                    android:tint="#6F655D" />
+                    android:scaleType="centerCrop"
+                    android:padding="3dp"
+                    android:src="@drawable/logo" />
 
                 <LinearLayout
                     android:layout_marginStart="14dp"

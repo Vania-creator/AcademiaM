@@ -53,14 +53,15 @@
                 android:gravity="top"
                 android:layout_marginBottom="20dp">
 
-                <View
+                <ImageView
                     android:id="@+id/imgPerfilFoto"
                     android:layout_width="75dp"
                     android:layout_height="75dp"
                     android:minWidth="75dp"
                     android:minHeight="75dp"
-                    android:background="@drawable/circulo_gris" />
-
+                    android:background="@drawable/circulo_gris"
+                    android:scaleType="centerCrop"
+                    android:padding="5dp" />
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

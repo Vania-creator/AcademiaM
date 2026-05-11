@@ -17,6 +17,7 @@ class CalendarioActivity : AppCompatActivity() {
     private var fechaCorta = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        ViewUtils.hacerPantallaCompleta(window)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_calendario)
 

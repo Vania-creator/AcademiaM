@@ -10,7 +10,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- HEADER -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="225dp"
@@ -34,7 +33,6 @@
 
         </LinearLayout>
 
-        <!-- CONTENIDO -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -44,55 +42,76 @@
             android:paddingTop="24dp"
             android:paddingBottom="32dp">
 
-            <!-- TARJETA CALENDARIO -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/contenedor_lista_alumnos"
-                android:padding="18dp"
-                android:elevation="3dp"
-                android:layout_marginBottom="22dp"
+                android:background="@drawable/card_alumno"
+                android:paddingTop="20dp"
+                android:paddingBottom="16dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:elevation="6dp"
+                android:layout_marginBottom="24dp"
                 android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Calendario"
+                    android:text="📅 Selecciona tu Día"
                     android:textColor="#173548"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    android:layout_marginBottom="6dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="12dp"
                     android:fontFamily="sans-serif-medium"/>
 
-                <TextView
-                    android:id="@+id/txtFechaSeleccionada"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Fecha elegida: 26/04/2026"
-                    android:textColor="#6F655D"
-                    android:textSize="14sp"
-                    android:layout_marginBottom="2dp"/>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#E0E0E0"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"/>
 
-                <TextView
-                    android:id="@+id/txtFechaConfirmada"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Fecha confirmada: ninguna"
-                    android:textColor="#9A9188"
-                    android:textSize="13sp"
-                    android:layout_marginBottom="16dp"/>
-
-                <!-- 🔥 AQUÍ YA VA BIEN EL CALENDARIO -->
                 <CalendarView
                     android:id="@+id/calendarView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"/>
+                    android:background="#FFFFFF"
+                    android:theme="@style/ThemeOverlay.AppCompat.Light"
+                    android:layout_marginBottom="12dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#F4F0E8"
+                    android:padding="12dp"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp">
+
+                    <TextView
+                        android:id="@+id/txtFechaSeleccionada"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Fecha elegida: 26/04/2026"
+                        android:textColor="#B15C2E"
+                        android:textSize="15sp"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/txtFechaConfirmada"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Confirmada: ninguna"
+                        android:textColor="#6F655D"
+                        android:textSize="13sp"
+                        android:layout_marginTop="4dp"/>
+                </LinearLayout>
 
             </LinearLayout>
 
-            <!-- BOTÓN SELECCIONAR -->
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnSeleccionarFecha"
                 android:layout_width="match_parent"
@@ -108,7 +127,6 @@
                 android:elevation="5dp"
                 android:stateListAnimator="@null"/>
 
-            <!-- BOTÓN REGRESAR -->
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnRegresarCalendario"
                 android:layout_width="match_parent"
