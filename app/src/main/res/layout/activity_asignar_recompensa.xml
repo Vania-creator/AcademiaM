@@ -113,6 +113,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
+
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnRegresarRec"
                     android:layout_width="0dp"
@@ -120,16 +121,16 @@
                     android:layout_weight="1"
                     android:layout_marginEnd="10dp"
                     android:background="@drawable/boton_gris"
-                    android:text="Cancelar" />
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnAsignarRec"
-                    android:layout_width="0dp"
-                    android:layout_height="54dp"
-                    android:layout_weight="1.3"
-                    android:background="@drawable/boton_gris"
-                    android:backgroundTint="#173548"
-                    android:text="Dar Insignia"
-                    android:textColor="#FFFFFF" />
+                    android:text="Cancelar"
+                    android:textColor="#263746" /> <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnAsignarRec"
+                android:layout_width="0dp"
+                android:layout_height="54dp"
+                android:layout_weight="1.3"
+                android:background="@drawable/boton_gris"
+                android:backgroundTint="#173548"
+                android:text="Dar Insignia"
+                android:textColor="#FFFFFF" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

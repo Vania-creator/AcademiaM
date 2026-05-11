@@ -12,10 +12,14 @@
     android:focusable="true"
     android:foreground="?attr/selectableItemBackground">
 
-    <View
+    <ImageView
+        android:id="@+id/imgActividadGr"
         android:layout_width="54dp"
         android:layout_height="54dp"
-        android:background="@drawable/circulo_gris" />
+        android:background="@drawable/circulo_gris"
+        android:scaleType="centerInside"
+        android:padding="10dp"
+        android:src="@drawable/logo" />
 
     <LinearLayout
         android:layout_width="0dp"

@@ -21,8 +21,6 @@ class GrabacionesActivity : AppCompatActivity() {
     private lateinit var container: LinearLayout
     private lateinit var txtError: TextView
     private var studentId: String = ""
-
-    // Reproductor interno de audio
     private var mediaPlayer: MediaPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,129 +36,112 @@ class GrabacionesActivity : AppCompatActivity() {
 
         if (studentId.isNotEmpty()) {
             cargarInfoAlumno()
-            cargarGrabacionesLocales() // 🔥 Cambiamos a lectura local
+            cargarGrabacionesLocales()
         } else {
             mostrarError("Error: ID de alumno no recibido")
         }
 
         findViewById<AppCompatButton>(R.id.btnRecompensa).setOnClickListener {
             val intent = Intent(this, PerfilAlumnoActivity::class.java)
+            intent.putExtra("STUDENT_ID", studentId)
             startActivity(intent)
         }
     }
 
     private fun cargarInfoAlumno() {
-        // Esta parte sigue usando Firebase para ver el perfil del alumno
         db.collection("students").document(studentId).get()
             .addOnSuccessListener { doc ->
                 if (doc.exists()) {
                     findViewById<TextView>(R.id.txtNombreGr).text = doc.getString("nombre")
-                    // 🔥 Se eliminó la línea del instrumento
                     findViewById<TextView>(R.id.txtRachaGr).text = "${doc.getLong("racha") ?: 0} Días"
+
+                    // 🔥 CARGAR IMAGEN DEL ALUMNO
+                    val imgAlumno = findViewById<ImageView>(R.id.imgAlumnoGr)
+                    val avatarName = doc.getString("avatar") ?: "logo"
+                    val resId = resources.getIdentifier(avatarName, "drawable", packageName)
+                    if (resId != 0) imgAlumno.setImageResource(resId) else imgAlumno.setImageResource(R.drawable.logo)
                 }
             }
     }
 
-    // 🔥 NUEVA FUNCIÓN: Lee los archivos locales en lugar de buscar en Firebase
     private fun cargarGrabacionesLocales() {
         container.removeAllViews()
         txtError.visibility = View.GONE
 
-        // 1. Buscamos la carpeta donde guardamos las prácticas
         val directorio = getExternalFilesDir(Environment.DIRECTORY_MUSIC)
-
         if (directorio == null || !directorio.exists()) {
             mostrarError("No se encontró la carpeta de audios.")
             return
         }
 
-        // 2. Obtenemos todos los archivos .3gp y los ordenamos del más nuevo al más viejo
         val archivos = directorio.listFiles { file -> file.extension == "3gp" }
-
         if (archivos == null || archivos.isEmpty()) {
-            mostrarError("El alumno no tiene grabaciones guardadas en este dispositivo.")
+            mostrarError("El alumno no tiene grabaciones guardadas.")
             return
         }
 
         archivos.sortByDescending { it.lastModified() }
-
-        // 3. Pintamos cada archivo en la pantalla
         val formatoFecha = SimpleDateFormat("dd/MMM/yyyy hh:mm a", Locale.getDefault())
 
         for (archivo in archivos) {
             try {
                 val item = LayoutInflater.from(this).inflate(R.layout.item_grabacion, container, false)
-
                 val fechaLegible = formatoFecha.format(Date(archivo.lastModified()))
 
                 item.findViewById<TextView>(R.id.txtTituloGr).text = "Práctica Reciente"
                 item.findViewById<TextView>(R.id.txtDetallesGr).text = "Archivo: ${archivo.name}"
                 item.findViewById<TextView>(R.id.txtFechaGr).text = fechaLegible
 
-                // Botón Play
+                // 🔥 PONER ICONO DE ACTIVIDAD (Usamos una partitura o icono musical)
+                val imgActividad = item.findViewById<ImageView>(R.id.imgActividadGr)
+                imgActividad.setImageResource(android.R.drawable.ic_btn_speak_now) // Puedes cambiarlo por R.drawable.tu_icono_musical
+
                 item.findViewById<ImageView>(R.id.btnPlayGr).setOnClickListener {
                     reproducirAudio(archivo.absolutePath)
                 }
 
-                // 🔥 BOTÓN BORRAR
                 item.findViewById<ImageView>(R.id.btnBorrarGr).setOnClickListener {
                     confirmarEliminacion(archivo)
                 }
 
                 container.addView(item)
-
             } catch (e: Exception) {
-                Log.e("GRABACIONES", "Error al inflar item: ${e.message}")
+                Log.e("GRABACIONES", "Error: ${e.message}")
             }
         }
     }
 
     private fun reproducirAudio(ruta: String) {
         try {
-            // Si ya hay un audio sonando, lo detenemos
             mediaPlayer?.stop()
             mediaPlayer?.release()
-
-            // Reproducimos el nuevo audio
             mediaPlayer = MediaPlayer().apply {
                 setDataSource(ruta)
                 prepare()
                 start()
             }
-            Toast.makeText(this, "Reproduciendo práctica...", Toast.LENGTH_SHORT).show()
-
+            Toast.makeText(this, "Reproduciendo...", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
-            Toast.makeText(this, "Error al reproducir el archivo", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Error al reproducir", Toast.LENGTH_SHORT).show()
         }
     }
+
     private fun confirmarEliminacion(archivo: File) {
-        val builder = androidx.appcompat.app.AlertDialog.Builder(this)
-        builder.setTitle("¿Borrar grabación?")
-        builder.setMessage("Esta acción eliminará el audio permanentemente de tu celular.")
-
-        builder.setPositiveButton("Borrar") { _, _ ->
-            borrarArchivo(archivo)
-        }
-
-        builder.setNegativeButton("Cancelar", null)
-        builder.show()
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("¿Borrar?")
+            .setMessage("Se eliminará permanentemente.")
+            .setPositiveButton("Borrar") { _, _ -> borrarArchivo(archivo) }
+            .setNegativeButton("Cancelar", null)
+            .show()
     }
 
     private fun borrarArchivo(archivo: File) {
-        try {
-            if (archivo.exists()) {
-                val eliminado = archivo.delete() // 🔥 Borra el archivo físico
-                if (eliminado) {
-                    ToastHelper.mostrarMensaje(this, "Grabación eliminada")
-                    cargarGrabacionesLocales() // Recargamos la lista para que desaparezca el item
-                } else {
-                    ToastHelper.mostrarMensaje(this, "No se pudo borrar el archivo")
-                }
-            }
-        } catch (e: Exception) {
-            ToastHelper.mostrarMensaje(this, "Error: ${e.message}")
+        if (archivo.exists() && archivo.delete()) {
+            ToastHelper.mostrarMensaje(this, "Eliminada")
+            cargarGrabacionesLocales()
         }
     }
+
     private fun mostrarError(msj: String) {
         txtError.text = msj
         txtError.visibility = View.VISIBLE
@@ -168,7 +149,6 @@ class GrabacionesActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        // Liberamos el reproductor al salir de la pantalla
         mediaPlayer?.release()
         mediaPlayer = null
     }

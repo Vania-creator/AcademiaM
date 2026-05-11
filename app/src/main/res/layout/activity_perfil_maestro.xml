@@ -213,7 +213,8 @@
                 android:background="@drawable/boton_gris"
                 android:text="Regresar al Menú"
                 android:textAllCaps="false"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="#173548" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>
