@@ -5,7 +5,6 @@
     android:orientation="vertical"
     android:background="#F4F0E8">
 
-    <!-- HEADER PREMIUM -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="180dp"
@@ -14,13 +13,13 @@
         android:orientation="vertical">
 
         <FrameLayout
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
             android:background="@drawable/glow_logo_menu">
 
             <ImageView
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
                 android:layout_gravity="center"
                 android:src="@drawable/logo"
                 android:scaleType="fitCenter"
@@ -40,7 +39,6 @@
 
     </LinearLayout>
 
-    <!-- LISTA -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -48,33 +46,88 @@
         android:fillViewport="true">
 
         <LinearLayout
-            android:id="@+id/containerTareasList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingStart="22dp"
-            android:paddingEnd="22dp"
-            android:paddingTop="20dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingTop="24dp"
             android:paddingBottom="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="HISTORIAL DE ASIGNACIONES"
+                android:textColor="#64748B"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.1"
+                android:layout_marginBottom="14dp"
+                android:layout_marginStart="4dp"/>
+
+            <LinearLayout
+                android:id="@+id/layoutTareasVacio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/contenedor_lista_alumnos"
+                android:padding="32dp"
+                android:elevation="3dp"
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="@null"
+                android:visibility="visible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="✨"
+                    android:textSize="36sp"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="¡Todo al día por aquí!"
+                    android:textColor="#173548"
+                    android:textSize="15sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No se encontraron tareas pendientes ni archivadas para este alumno."
+                    android:textColor="#64748B"
+                    android:textSize="13sp"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/containerTareasList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
 
-    <!-- BOTÓN PRO -->
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnRegresarHistorialT"
         android:layout_width="match_parent"
-        android:layout_height="58dp"
-        android:layout_marginStart="22dp"
-        android:layout_marginEnd="22dp"
+        android:layout_height="54dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:layout_marginBottom="18dp"
         android:background="@drawable/boton_menu_animado"
         android:backgroundTint="@null"
-        android:text="Regresar al Perfil"
+        android:text="❮   Regresar al Perfil"
         android:textAllCaps="false"
         android:textColor="#263746"
         android:textStyle="bold"
-        android:elevation="5dp"
-        android:stateListAnimator="@null"/>
+        android:elevation="4dp"
+        android:stateListAnimator="@null"
+        android:gravity="center"/>
 
 </LinearLayout>

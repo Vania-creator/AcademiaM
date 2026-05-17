@@ -57,6 +57,10 @@ class LibrosActivity : AppCompatActivity() {
             )
         }
 
+        itemLibro4.setOnClickListener {
+            val intent = Intent(this, PartituraCapasActivity::class.java)
+            startActivity(intent)
+        }
         btnRegresar.setOnClickListener {
             finish()
         }

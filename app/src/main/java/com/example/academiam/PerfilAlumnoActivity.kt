@@ -2,6 +2,7 @@ package com.example.academiam
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View // Importación necesaria para GONE/VISIBLE
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -90,11 +91,29 @@ class PerfilAlumnoActivity : AppCompatActivity() {
                 containerInsignias.removeAllViews()
 
                 if (mapaProgreso != null && mapaProgreso.isNotEmpty()) {
+                    // Calculamos la escala en base a la densidad de pantalla del teléfono
+                    val factorEscala = resources.displayMetrics.density
+
+                    // VISUAL: Aumentamos el tamaño total de la card a 90dp para que luzca el círculo blanco
+                    val tamañoCardPx = (90 * factorEscala).toInt()
+                    val margenDerechoPx = (12 * factorEscala).toInt()
+
+
                     for ((clave, nivelAlcanzado) in mapaProgreso) {
                         val img = ImageView(this)
-                        val params = LinearLayout.LayoutParams(140, 140)
-                        params.setMargins(0, 0, 16, 0)
+
+                        // VISUAL: Configuración de la Card Circular Premium
+                        val params = LinearLayout.LayoutParams(tamañoCardPx, tamañoCardPx)
+                        params.setMargins(0, 0, margenDerechoPx, 0)
                         img.layoutParams = params
+
+                        // 🔥 Aquí asignamos tu drawable de círculo blanco de fondo
+                        img.setBackgroundResource(R.drawable.circulo_blanco)
+
+
+
+                        // Mantenemos CENTER_INSIDE para que la medalla quepa perfecta con el padding
+                        img.scaleType = ImageView.ScaleType.CENTER_INSIDE
 
                         val nombreArchivo = "${clave}${nivelAlcanzado}"
                         val imageResId = resources.getIdentifier(nombreArchivo, "drawable", packageName)
@@ -122,11 +141,7 @@ class PerfilAlumnoActivity : AppCompatActivity() {
         }
     }
 
-    // 🔥 FUNCIÓN PARA SELECCIONAR Y GUARDAR AVATAR (10 opciones para alumno)
-// Dentro de PerfilAlumnoActivity.kt
-
     private fun mostrarDialogoAvatares(studentId: String) {
-        // Creamos la lista de nombres del alumno1 al alumno10
         val avatares = List(10) { i -> "alumno${i + 1}" }
 
         val gridLayout = android.widget.GridLayout(this).apply {
@@ -148,7 +163,6 @@ class PerfilAlumnoActivity : AppCompatActivity() {
             params.setMargins(20, 20, 20, 20)
             img.layoutParams = params
 
-            // Estilo circular para la previsualización
             img.setBackgroundResource(R.drawable.circulo_gris)
             img.setPadding(10, 10, 10, 10)
             img.scaleType = ImageView.ScaleType.CENTER_CROP
@@ -249,11 +263,11 @@ class PerfilAlumnoActivity : AppCompatActivity() {
                 if (query.isEmpty) {
                     tvTitulo.text = "No hay tareas"
                     tvDesc.text = "El maestro no ha asignado tareas aún."
-                    tvStatus.visibility = android.view.View.GONE
+                    tvStatus.visibility = View.GONE
                 } else {
                     val doc = query.documents[0]
                     val status = doc.getString("status") ?: "Pendiente"
-                    tvStatus.visibility = android.view.View.VISIBLE
+                    tvStatus.visibility = View.VISIBLE
                     tvTitulo.text = doc.getString("title")
                     tvDesc.text = doc.getString("description")
                     tvStatus.text = status.uppercase()
@@ -271,7 +285,7 @@ class PerfilAlumnoActivity : AppCompatActivity() {
 
     private fun configurarBotonesHistorial(id: String) {
         findViewById<TextView>(R.id.btnVerHistorialReportes).setOnClickListener {
-            val intent = Intent(this, HistorialReportesActivity::class.java)
+            val intent = Intent(this, GrabacionesActivity::class.java) // ID Corregido tecnicamente
             intent.putExtra("STUDENT_ID", id)
             intent.putExtra("STUDENT_NAME", findViewById<TextView>(R.id.txtNombrePerfil).text.toString())
             startActivity(intent)
@@ -285,7 +299,6 @@ class PerfilAlumnoActivity : AppCompatActivity() {
         }
     }
 
-    // 🔥 Función de Mensaje Personalizado con Logo 🔥
     private fun mostrarMensajeAcademia(mensaje: String) {
         val layout = layoutInflater.inflate(R.layout.layout_toast_personalizado, null)
         val txt = layout.findViewById<TextView>(R.id.txtMensajeToast)

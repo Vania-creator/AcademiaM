@@ -13,19 +13,20 @@
     android:focusable="true">
 
     <FrameLayout
-        android:layout_width="72dp"
-        android:layout_height="72dp"
+        android:layout_width="92dp"
+        android:layout_height="92dp"
         android:layout_marginBottom="6dp"
         android:background="@drawable/circulo_blanco"
         android:elevation="3dp"
-        android:padding="2dp"> <ImageView
-        android:id="@+id/imgInsignia"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerInside"
-        android:padding="8dp"
-        android:src="@drawable/logo"
-        android:adjustViewBounds="true" />
+        android:padding="2dp">
+
+        <ImageView
+            android:id="@+id/imgInsignia"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/logo" />
 
     </FrameLayout>
 

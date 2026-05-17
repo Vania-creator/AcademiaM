@@ -4,8 +4,9 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/card_alumno"
+    android:backgroundTint="@null"
     android:elevation="3dp"
-    android:padding="14dp"
+    android:padding="16dp"
     android:layout_marginBottom="12dp">
 
     <TextView
@@ -21,7 +22,7 @@
         android:paddingEnd="8dp"
         android:paddingTop="3dp"
         android:paddingBottom="3dp"
-        android:layout_marginBottom="6dp"/>
+        android:layout_marginBottom="8dp"/>
 
     <TextView
         android:id="@+id/txtTituloTareaItem"
@@ -38,27 +39,30 @@
         android:layout_height="wrap_content"
         android:text="Asignada: 2026-04-12"
         android:textSize="12sp"
-        android:textColor="#6F655D"
+        android:textColor="#64748B"
         android:layout_marginTop="2dp" />
 
     <TextView
         android:id="@+id/txtDescTareaItem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="10dp"
         android:text="Descripción detallada de la tarea..."
-        android:textColor="#263746" />
+        android:textColor="#263746"
+        android:textSize="14sp"
+        android:lineSpacingExtra="2dp" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnAbrirTareaItem"
         android:layout_width="match_parent"
-        android:layout_height="42dp"
-        android:layout_marginTop="12dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="14dp"
         android:background="@drawable/boton_gris"
         android:backgroundTint="#173548"
         android:text="Ver y Completar"
         android:textColor="#FFFFFF"
         android:textSize="13sp"
+        android:textStyle="bold"
         android:textAllCaps="false"
         android:visibility="gone"/>
 </LinearLayout>

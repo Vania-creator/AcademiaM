@@ -1,10 +1,10 @@
 package com.example.academiam
 
-import android.R.attr.data
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -66,37 +66,52 @@ class HistorialReportesActivity : AppCompatActivity() {
 
     private fun filtrarYMostrarReportes(textoBusqueda: String) {
         container.removeAllViews()
+
+        // Referencias a la nueva interfaz de estado vacío
+        val layoutReportesVacio = findViewById<LinearLayout>(R.id.layoutReportesVacio)
+        val txtVacioIcono = findViewById<TextView>(R.id.txtVacioIcono)
+        val txtVacioTitulo = findViewById<TextView>(R.id.txtTitulo) ?: findViewById<TextView>(R.id.txtVacioTitulo)
+        val txtVacioSubtexto = findViewById<TextView>(R.id.txtVacioSubtexto)
+
         val filtro = textoBusqueda.lowercase().trim()
 
-// Filtramos la lista maestra
+        // Filtramos la lista maestra
         val listaFiltrada = if (filtro.isEmpty()) {
             listaCompletaReportes
         } else {
             listaCompletaReportes.filter { dato ->
-                // ¡AQUÍ ESTABA EL ERROR! Cambiamos "data" por "dato"
                 val fecha = (dato["date"] as? String ?: "").lowercase()
                 val tipo = (dato["tipoClase"] as? String ?: "").lowercase()
                 val contenido = (dato["content"] as? String ?: "").lowercase()
                 val insignia = (dato["insignia"] as? String ?: "").lowercase()
 
-                // Si lo que escribiste coincide con la fecha, las notas o la insignia, lo mostramos
                 fecha.contains(filtro) || contenido.contains(filtro) || tipo.contains(filtro) || insignia.contains(filtro)
             }
         }
 
+        // LÓGICA VISUAL DE CONTROL DE ESTADO VACÍO DINÁMICO
         if (listaFiltrada.isEmpty()) {
-            val tvError = TextView(this).apply {
-                text = if (listaCompletaReportes.isEmpty()) "No hay historial disponible" else "No se encontraron resultados para '$textoBusqueda'"
-                setTextColor(android.graphics.Color.GRAY)
-                textSize = 16f
-                setPadding(0, 40, 0, 0)
-                gravity = android.view.Gravity.CENTER
+            layoutReportesVacio?.visibility = View.VISIBLE
+            container.visibility = View.GONE
+
+            if (listaCompletaReportes.isEmpty()) {
+                // Caso A: El alumno de verdad no tiene ningún reporte en la BD
+                txtVacioIcono?.text = "📊"
+                txtVacioTitulo?.text = "Sin reportes aún"
+                txtVacioSubtexto?.text = "No hay bitácoras de avance registradas para este alumno."
+            } else {
+                // Caso B: El alumno sí tiene reportes, pero ninguno coincide con lo escrito en el EditText
+                txtVacioIcono?.text = "🔍"
+                txtVacioTitulo?.text = "Sin resultados"
+                txtVacioSubtexto?.text = "No encontramos reportes que coincidan con '$textoBusqueda'."
             }
-            container.addView(tvError)
             return
+        } else {
+            layoutReportesVacio?.visibility = View.GONE
+            container.visibility = View.VISIBLE
         }
 
-        // Pintamos los resultados
+        // Pintamos los resultados si la lista tiene elementos
         for (data in listaFiltrada) {
             val view = LayoutInflater.from(this).inflate(R.layout.item_reporte_historial, container, false)
 

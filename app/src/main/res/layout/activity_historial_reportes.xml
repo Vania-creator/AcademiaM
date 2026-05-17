@@ -13,13 +13,13 @@
         android:orientation="vertical">
 
         <FrameLayout
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
             android:background="@drawable/glow_logo_menu">
 
             <ImageView
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
                 android:layout_gravity="center"
                 android:src="@drawable/logo"
                 android:scaleType="fitCenter"
@@ -40,17 +40,17 @@
     <EditText
         android:id="@+id/etBuscadorReportes"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginHorizontal="22dp"
+        android:layout_height="54dp"
+        android:layout_marginHorizontal="20dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/campo_redondo"
-        android:hint="🔍 Buscar por fecha (ej. 2026-04), palabra o logro..."
+        android:background="@drawable/campo_busqueda"
+        android:hint="🔍 Buscar por fecha, palabra o logro..."
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:textColor="#263746"
-        android:textColorHint="#888888"
+        android:textColor="#173548"
+        android:textColorHint="#94a3b8"
         android:textSize="14sp"
-        android:elevation="2dp"
+        android:elevation="3dp"
         android:inputType="text" />
 
     <ScrollView
@@ -60,31 +60,90 @@
         android:fillViewport="true">
 
         <LinearLayout
-            android:id="@+id/containerReportes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingStart="22dp"
-            android:paddingEnd="22dp"
-            android:paddingTop="16dp"
-            android:paddingBottom="20dp" />
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BITÁCORAS DE SEGUIMIENTO"
+                android:textColor="#64748B"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.1"
+                android:layout_marginBottom="14dp"
+                android:layout_marginStart="4dp"/>
+
+            <LinearLayout
+                android:id="@+id/layoutReportesVacio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/contenedor_lista_alumnos"
+                android:padding="32dp"
+                android:elevation="3dp"
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="@null"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/txtVacioIcono"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📊"
+                    android:textSize="36sp"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:id="@+id/txtVacioTitulo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sin registros"
+                    android:textColor="#173548"
+                    android:textSize="15sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/txtVacioSubtexto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No se encontraron bitácoras cargadas en el historial."
+                    android:textColor="#64748B"
+                    android:textSize="13sp"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/containerReportes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+        </LinearLayout>
     </ScrollView>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnRegresarHistorial"
         android:layout_width="match_parent"
-        android:layout_height="58dp"
-        android:layout_marginStart="22dp"
-        android:layout_marginEnd="22dp"
+        android:layout_height="54dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:layout_marginBottom="18dp"
         android:background="@drawable/boton_menu_animado"
         android:backgroundTint="@null"
-        android:text="Cerrar Historial"
+        android:text="❮   Cerrar Historial"
         android:textAllCaps="false"
         android:textColor="#263746"
         android:textStyle="bold"
-        android:elevation="5dp"
-        android:stateListAnimator="@null" />
+        android:elevation="4dp"
+        android:stateListAnimator="@null"
+        android:gravity="center" />
 
 </LinearLayout>

@@ -9,8 +9,7 @@ import android.os.CountDownTimer
 import android.os.Environment
 import android.util.Log
 import android.view.View
-import android.widget.FrameLayout
-import android.widget.ImageView
+import android.widget.HorizontalScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -22,7 +21,6 @@ import be.tarsos.dsp.io.android.AudioDispatcherFactory
 import be.tarsos.dsp.pitch.PitchDetectionHandler
 import be.tarsos.dsp.pitch.PitchProcessor
 import com.google.firebase.firestore.FirebaseFirestore
-import java.io.File
 import kotlin.math.ln
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -31,15 +29,14 @@ class PartituraInteractivaActivity : AppCompatActivity() {
 
     private lateinit var dispatcher: AudioDispatcher
 
-    // UI
-    private lateinit var framePartitura: FrameLayout
-    private lateinit var viewBarra: View
+    // --- UI: NUEVAS REFERENCIAS PARA LA PARTITURA DINÁMICA ---
+    private lateinit var hScrollViewPartitura: HorizontalScrollView
+    private lateinit var partituraView: PartituraView // TU NUEVA CLASE PERSONALIZADA
     private lateinit var tvNotaEscuchada: TextView
     private lateinit var tvFeedback: TextView
     private lateinit var tvSecuenciaNotas: TextView
     private lateinit var btnAtras: AppCompatButton
     private lateinit var btnGrabar: AppCompatButton
-    private lateinit var ivPartitura: ImageView
     private lateinit var btnRepetir: AppCompatButton
 
     // Lógica del juego y Firestore
@@ -49,7 +46,6 @@ class PartituraInteractivaActivity : AppCompatActivity() {
 
     private var melodia = ArrayList<String>()
     private var indiceActual = 0
-    private var ultimaNotaEscuchada = ""
     private var estaPreparado = false
     private var erroresCometidos = 0
     private var studentId = ""
@@ -65,46 +61,38 @@ class PartituraInteractivaActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_partitura_interactiva)
 
-        // RECUPERAMOS EL ID DEL ALUMNO
         studentId = intent.getStringExtra("STUDENT_ID") ?: ""
 
-        // Referencias UI
-        framePartitura = findViewById(R.id.framePartitura)
-        viewBarra = findViewById(R.id.viewBarra)
+        // Conectando el código con el XML nuevo
+        hScrollViewPartitura = findViewById(R.id.hScrollViewPartitura)
+        partituraView = findViewById(R.id.partituraView) // YA NO EXISTE viewBarra ni ivPartitura
+
         tvNotaEscuchada = findViewById(R.id.tvNotaEscuchada)
         tvFeedback = findViewById(R.id.tvFeedback)
         tvSecuenciaNotas = findViewById(R.id.tvSecuenciaNotas)
         btnAtras = findViewById(R.id.btnAtras)
         btnGrabar = findViewById(R.id.btnGrabar)
-        ivPartitura = findViewById(R.id.ivPartitura)
         btnRepetir = findViewById(R.id.btnRepetir)
 
         val titulo = intent.getStringExtra("TITULO_CANCION") ?: "Práctica Libre"
         findViewById<TextView>(R.id.tvTituloCancion).text = titulo
 
-        val imagenResId = intent.getIntExtra("IMAGEN_PARTITURA", R.drawable.logo)
-        ivPartitura.setImageResource(imagenResId)
-
-        // Clicks
         btnAtras.setOnClickListener { finish() }
-
         btnRepetir.setOnClickListener { reiniciarJuego() }
 
         btnGrabar.setOnClickListener {
-            if (mediaRecorder == null) {
-                iniciarGrabacion()
-            } else {
-                detenerYGuardarAudio()
-            }
+            if (mediaRecorder == null) iniciarGrabacion() else detenerYGuardarAudio()
         }
 
-        // Iniciar melodía
         val notasArray = intent.getStringArrayListExtra("SECUENCIA_NOTAS")
         if (notasArray != null && notasArray.isNotEmpty()) {
             melodia = ArrayList(notasArray)
             tvSecuenciaNotas.text = "Secuencia: ${melodia.joinToString(" - ")}"
 
-            moverBarraVisual()
+            // === LA MAGIA ===
+            // Mandamos el arreglo a la vista para que dibuje las líneas y bolitas
+            partituraView.setNotas(melodia)
+
             iniciarCuentaRegresiva()
         } else {
             Toast.makeText(this, "Error: Melodía vacía", Toast.LENGTH_LONG).show()
@@ -113,9 +101,7 @@ class PartituraInteractivaActivity : AppCompatActivity() {
     }
 
     private fun reiniciarJuego() {
-        if (::dispatcher.isInitialized && !dispatcher.isStopped) {
-            dispatcher.stop()
-        }
+        if (::dispatcher.isInitialized && !dispatcher.isStopped) dispatcher.stop()
 
         indiceActual = 0
         erroresCometidos = 0
@@ -128,7 +114,10 @@ class PartituraInteractivaActivity : AppCompatActivity() {
         tvNotaEscuchada.text = "Esperando nota..."
         btnRepetir.visibility = View.GONE
 
-        moverBarraVisual()
+        // Limpiamos los colores del lienzo y regresamos el scroll al principio
+        partituraView.reiniciar()
+        hScrollViewPartitura.scrollTo(0, 0)
+
         iniciarCuentaRegresiva()
     }
 
@@ -152,9 +141,7 @@ class PartituraInteractivaActivity : AppCompatActivity() {
                     override fun onTick(millisUntilFinished: Long) {
                         btnGrabar.text = "⏹ Grabando... (${millisUntilFinished / 1000}s restantes)"
                     }
-                    override fun onFinish() {
-                        detenerYGuardarAudio()
-                    }
+                    override fun onFinish() { detenerYGuardarAudio() }
                 }.start()
             } catch (e: Exception) {
                 Toast.makeText(this@PartituraInteractivaActivity, "Error al iniciar grabadora: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -205,23 +192,6 @@ class PartituraInteractivaActivity : AppCompatActivity() {
         }
     }
 
-    private fun moverBarraVisual() {
-        framePartitura.post {
-            val anchoTotal = framePartitura.width.toFloat()
-            val margenInicial = anchoTotal * 0.18f
-            val margenFinal = anchoTotal * 0.05f
-            val espacioParaNotas = anchoTotal - margenInicial - margenFinal
-            val tamañoPaso = if (melodia.size > 1) espacioParaNotas / (melodia.size - 1) else 0f
-            val indiceSeguro = if (indiceActual >= melodia.size) melodia.size - 1 else indiceActual
-            val nuevaPosicionX = margenInicial + (tamañoPaso * indiceSeguro)
-
-            viewBarra.animate()
-                .translationX(nuevaPosicionX)
-                .setDuration(250)
-                .start()
-        }
-    }
-
     private fun verificarPermisosYComenzar() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), CODIGO_PERMISO_MIC)
@@ -242,6 +212,7 @@ class PartituraInteractivaActivity : AppCompatActivity() {
         }
     }
 
+    // EL MICRÓFONO QUEDA INTACTO COMO PEDISTE
     private fun iniciarDeteccion() {
         val handler = PitchDetectionHandler { result, _ ->
             val pitch = result.pitch
@@ -253,12 +224,7 @@ class PartituraInteractivaActivity : AppCompatActivity() {
             }
         }
 
-        val processor = PitchProcessor(
-            PitchProcessor.PitchEstimationAlgorithm.YIN,
-            22050f,
-            1024,
-            handler
-        )
+        val processor = PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.YIN, 22050f, 1024, handler)
 
         try {
             dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0)
@@ -276,15 +242,19 @@ class PartituraInteractivaActivity : AppCompatActivity() {
         tvNotaEscuchada.text = "Escuchando: $notaDetectada"
 
         if (indiceActual >= melodia.size) return
-
         if (tiempoActual - ultimoAciertoMs < COOLDOWN_NOTAS_MS) return
 
         val notaObjetivoActual = melodia[indiceActual]
 
         if (notaDetectada.startsWith(notaObjetivoActual)) {
             ultimoAciertoMs = tiempoActual
+
+            // Pinta de VERDE la nota en la que acertó
+            partituraView.marcarAcierto(indiceActual)
             indiceActual++
-            moverBarraVisual()
+
+            // Movemos el scroll para centrar la siguiente nota (180 es el espaciado configurado)
+            hScrollViewPartitura.smoothScrollBy(180, 0)
 
             if (indiceActual == melodia.size) {
                 tvFeedback.text = "¡COMPLETADO! 🎉"
@@ -292,23 +262,20 @@ class PartituraInteractivaActivity : AppCompatActivity() {
                 tvSecuenciaNotas.text = "Errores cometidos: $erroresCometidos"
                 tvNotaEscuchada.text = "Has terminado la secuencia."
 
-                // Mostramos el botón de repetir
-                runOnUiThread {
-                    btnRepetir.visibility = View.VISIBLE
-                }
-
-                if (::dispatcher.isInitialized && !dispatcher.isStopped) {
-                    dispatcher.stop()
-                }
+                runOnUiThread { btnRepetir.visibility = View.VISIBLE }
+                if (::dispatcher.isInitialized && !dispatcher.isStopped) dispatcher.stop()
 
                 evaluarYOthorgarInsignia()
-
             } else {
                 actualizarTextoTurno()
             }
         } else {
             ultimoAciertoMs = tiempoActual
             erroresCometidos++
+
+            // Pinta de ROJO la nota temporalmente
+            partituraView.marcarError(indiceActual)
+
             tvFeedback.text = "¡Ups! Era $notaObjetivoActual"
             tvFeedback.setTextColor(Color.RED)
         }
@@ -332,7 +299,6 @@ class PartituraInteractivaActivity : AppCompatActivity() {
         docRef.get().addOnSuccessListener { snapshot ->
             if (snapshot.exists()) {
                 val expActual = snapshot.getLong("expTotal") ?: 0L
-
                 val insignias = snapshot.get("insignias_progreso") as? Map<String, Long> ?: emptyMap()
                 val nivelActualInsignia = insignias[claveInsignia] ?: 0L
 
@@ -356,9 +322,7 @@ class PartituraInteractivaActivity : AppCompatActivity() {
                     )
 
                     docRef.update(actualizaciones).addOnSuccessListener {
-                        val mensaje = if (nivelFinal == 3L)
-                            "¡Ejecución Perfecta! Ganaste: $nombreInsignia Nivel 3 🏅"
-                        else "¡Buen intento! Ganaste: $nombreInsignia Nivel 1"
+                        val mensaje = if (nivelFinal == 3L) "¡Ejecución Perfecta! Ganaste: $nombreInsignia Nivel 3 🏅" else "¡Buen intento! Ganaste: $nombreInsignia Nivel 1"
                         ToastHelper.mostrarMensaje(this, mensaje)
                     }
                 } else {
@@ -377,9 +341,7 @@ class PartituraInteractivaActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (::dispatcher.isInitialized && !dispatcher.isStopped) {
-            dispatcher.stop()
-        }
+        if (::dispatcher.isInitialized && !dispatcher.isStopped) dispatcher.stop()
         mediaRecorder?.release()
         timerGrabacion?.cancel()
     }

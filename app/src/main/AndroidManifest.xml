@@ -52,7 +52,7 @@
         <activity android:name=".LeccionesActivity" android:exported="false"
             android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />
-
+        <activity android:name=".PartituraCapasActivity" />
         <activity android:name=".MenuMaestroActivity" android:exported="false"
             android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />

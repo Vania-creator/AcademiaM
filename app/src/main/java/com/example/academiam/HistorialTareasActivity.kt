@@ -42,6 +42,8 @@ class HistorialTareasActivity : AppCompatActivity() {
 
     private fun cargarTareas() {
         val container = findViewById<LinearLayout>(R.id.containerTareasList)
+        // Buscamos el contenedor del estado vacío que agregamos en el XML
+        val layoutTareasVacio = findViewById<LinearLayout>(R.id.layoutTareasVacio)
 
         db.collection("tasks")
             .whereEqualTo("studentId", studentId)
@@ -49,6 +51,13 @@ class HistorialTareasActivity : AppCompatActivity() {
             .get()
             .addOnSuccessListener { query ->
                 container.removeAllViews()
+
+                // VISUAL: Controlamos si se muestra el letrero bonito o la lista de tareas
+                if (query.isEmpty) {
+                    layoutTareasVacio?.visibility = View.VISIBLE
+                } else {
+                    layoutTareasVacio?.visibility = View.GONE
+                }
 
                 for (doc in query) {
                     val view = LayoutInflater.from(this).inflate(R.layout.item_tarea_historial, container, false)
