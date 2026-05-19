@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
@@ -16,22 +17,17 @@
             android:background="#173548"
             android:gravity="center"
             android:orientation="vertical">
-
             <FrameLayout
                 android:layout_width="205dp"
                 android:layout_height="205dp"
                 android:background="@drawable/glow_logo_menu">
-
                 <ImageView
                     android:layout_width="145dp"
                     android:layout_height="145dp"
                     android:layout_gravity="center"
                     android:src="@drawable/logo"
-                    android:scaleType="fitCenter"
-                    android:contentDescription="Logo" />
-
+                    android:scaleType="fitCenter" />
             </FrameLayout>
-
         </LinearLayout>
 
         <LinearLayout
@@ -52,16 +48,47 @@
                 android:elevation="2dp"
                 android:layout_marginBottom="22dp">
 
-                <TextView
-                    android:id="@+id/txtFechaHorario"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Viernes 24 Noviembre 2025"
-                    android:textColor="#173548"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:fontFamily="sans-serif-medium"
-                    android:layout_marginBottom="14dp" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="14dp">
+
+                    <ImageButton
+                        android:id="@+id/btnDiaAnterior"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@android:drawable/ic_media_previous"
+                        app:tint="#173548" />
+
+                    <TextView
+                        android:id="@+id/txtFechaHorario"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Viernes 24 Noviembre 2025"
+                        android:textColor="#173548"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <ImageButton
+                        android:id="@+id/btnDiaSiguiente"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@android:drawable/ic_media_next"
+                        app:tint="#173548" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#E0E0E0"
+                    android:layout_marginBottom="14dp"/>
 
                 <LinearLayout
                     android:id="@+id/containerClasesDia"
@@ -80,7 +107,7 @@
                 android:backgroundTint="@null"
                 android:elevation="5dp"
                 android:stateListAnimator="@null"
-                android:text="Calendario"
+                android:text="Ver Calendario Completo"
                 android:textAllCaps="false"
                 android:textColor="#263746"
                 android:textSize="16sp"
@@ -101,6 +128,5 @@
                 android:textStyle="bold" />
 
         </LinearLayout>
-
     </LinearLayout>
 </ScrollView>

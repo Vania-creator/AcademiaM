@@ -1,8 +1,11 @@
 package com.example.academiam
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -13,7 +16,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.*
 
-// Modelo actualizado con instrumento y notas
 data class ClaseEvento(
     val studentId: String,
     val nombre: String,
@@ -31,13 +33,21 @@ class HorarioActivity : AppCompatActivity() {
     private var teacherId: String = ""
     private val listaEventosDia = mutableListOf<ClaseEvento>()
 
+    // Objeto para llevar control del día seleccionado
+    private var calendarioActual = Calendar.getInstance()
+
+    private val formatoVisible = SimpleDateFormat("EEEE d MMMM yyyy", Locale("es", "MX"))
+    private val formatoBD = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+
     private val calendarioLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
                 val fechaSeleccionada = result.data?.getStringExtra("fechaSeleccionada")
                 if (!fechaSeleccionada.isNullOrEmpty()) {
-                    txtFechaHorario.text = fechaSeleccionada
-                    procesarCargaDeHorario(fechaSeleccionada)
+                    try {
+                        calendarioActual.time = formatoVisible.parse(fechaSeleccionada)!!
+                        actualizarFechaYBuscar()
+                    } catch (e: Exception) {}
                 }
             }
         }
@@ -50,18 +60,36 @@ class HorarioActivity : AppCompatActivity() {
         teacherId = intent.getStringExtra("TEACHER_ID") ?: ""
         txtFechaHorario = findViewById(R.id.txtFechaHorario)
         containerClases = findViewById(R.id.containerClasesDia)
+
         val btnRegresar = findViewById<AppCompatButton>(R.id.btnRegresarHorario)
         val btnCalendario = findViewById<AppCompatButton>(R.id.btnCalendario)
+        val btnAnterior = findViewById<ImageButton>(R.id.btnDiaAnterior)
+        val btnSiguiente = findViewById<ImageButton>(R.id.btnDiaSiguiente)
 
         btnRegresar.setOnClickListener { finish() }
+
         btnCalendario.setOnClickListener {
             val intent = Intent(this, CalendarioActivity::class.java)
             calendarioLauncher.launch(intent)
         }
 
-        val hoy = SimpleDateFormat("EEEE d MMMM yyyy", Locale("es", "MX")).format(Date())
-        txtFechaHorario.text = hoy
-        procesarCargaDeHorario(hoy)
+        btnAnterior.setOnClickListener {
+            calendarioActual.add(Calendar.DAY_OF_YEAR, -1)
+            actualizarFechaYBuscar()
+        }
+
+        btnSiguiente.setOnClickListener {
+            calendarioActual.add(Calendar.DAY_OF_YEAR, 1)
+            actualizarFechaYBuscar()
+        }
+
+        actualizarFechaYBuscar()
+    }
+
+    private fun actualizarFechaYBuscar() {
+        val fechaVisible = formatoVisible.format(calendarioActual.time).replaceFirstChar { it.uppercase() }
+        txtFechaHorario.text = fechaVisible
+        procesarCargaDeHorario(fechaVisible)
     }
 
     private fun procesarCargaDeHorario(fechaTexto: String) {
@@ -69,7 +97,7 @@ class HorarioActivity : AppCompatActivity() {
         containerClases.removeAllViews()
 
         val diaSemana = obtenerDiaAbreviado(fechaTexto)
-        val fechaFormatoDB = convertirFechaADB(fechaTexto)
+        val fechaFormatoDB = formatoBD.format(calendarioActual.time)
         var consultasFinalizadas = 0
 
         val checkFinalizar = {
@@ -80,7 +108,6 @@ class HorarioActivity : AppCompatActivity() {
             }
         }
 
-        // Consultar clases fijas y eventos especiales
         val queryFijas = db.collection("classes").whereEqualTo("teacherId", teacherId).whereEqualTo("dayOfWeek", diaSemana).whereEqualTo("type", "fija")
         val queryEspeciales = db.collection("classes").whereEqualTo("teacherId", teacherId).whereEqualTo("date", fechaFormatoDB)
 
@@ -114,43 +141,51 @@ class HorarioActivity : AppCompatActivity() {
 
     private fun dibujarClasesEnPantalla() {
         containerClases.removeAllViews()
+
+        if (listaEventosDia.isEmpty()) {
+            val tvDescanso = TextView(this).apply {
+                text = "¡Día libre!\nDisfruta tu descanso ☕🎶"
+                textSize = 16f
+                setTextColor(Color.parseColor("#888888"))
+                gravity = Gravity.CENTER
+                setPadding(0, 60, 0, 60)
+            }
+            containerClases.addView(tvDescanso)
+            return
+        }
+
         for (clase in listaEventosDia) {
             val view = LayoutInflater.from(this).inflate(R.layout.item_clase_horario, containerClases, false)
 
             view.findViewById<TextView>(R.id.txtNombreAlumnoH).text = clase.nombre
-            view.findViewById<TextView>(R.id.txtInstrumentoH).text = "(${clase.instrumento})"
+            view.findViewById<TextView>(R.id.txtInstrumentoH).text = "🎵 ${clase.instrumento}"
             view.findViewById<TextView>(R.id.txtHoraH).text = clase.hora
 
             val txtNotas = view.findViewById<TextView>(R.id.txtNotasH)
             if (clase.nota.isNotEmpty()) {
                 txtNotas.text = "Nota: ${clase.nota}"
             } else {
-                txtNotas.text = "Sin notas de clase"
+                txtNotas.text = "Sin notas para esta clase"
             }
 
             val txtTipo = view.findViewById<TextView>(R.id.txtTipoClaseH)
-            txtTipo.text = clase.tipo.replaceFirstChar { it.uppercase() }
-            if (clase.tipo.lowercase() == "reposición") txtTipo.setTextColor(android.graphics.Color.parseColor("#D32F2F"))
+            txtTipo.text = clase.tipo.uppercase()
+            if (clase.tipo.lowercase() == "reposición" || clase.tipo.lowercase() == "reposicion") {
+                txtTipo.setTextColor(Color.parseColor("#D32F2F"))
+                txtTipo.setBackgroundColor(Color.parseColor("#FFEBEE"))
+            }
 
-            // 🔥 CARGAMOS EL AVATAR DINÁMICO 🔥
             val imgAvatar = view.findViewById<ImageView>(R.id.imgAvatarHorario)
             if (imgAvatar != null) {
-                // Hacemos una consulta rápida a Firebase para sacar su avatar
                 db.collection("students").document(clase.studentId).get()
                     .addOnSuccessListener { doc ->
                         if (doc.exists()) {
                             val avatarName = doc.getString("avatar") ?: "logo"
                             val resId = resources.getIdentifier(avatarName, "drawable", packageName)
-                            if (resId != 0) {
-                                imgAvatar.setImageResource(resId)
-                            } else {
-                                imgAvatar.setImageResource(R.drawable.logo)
-                            }
+                            if (resId != 0) imgAvatar.setImageResource(resId)
+                            else imgAvatar.setImageResource(R.drawable.logo)
                         }
-                    }
-                    .addOnFailureListener {
-                        imgAvatar.setImageResource(R.drawable.logo)
-                    }
+                    }.addOnFailureListener { imgAvatar.setImageResource(R.drawable.logo) }
             }
 
             view.setOnClickListener {
@@ -173,13 +208,5 @@ class HorarioActivity : AppCompatActivity() {
             f.contains("sábado") || f.contains("sabado") -> "Sab"
             else -> "Dom"
         }
-    }
-
-    private fun convertirFechaADB(fechaTexto: String): String {
-        return try {
-            val formatEntrada = SimpleDateFormat("EEEE d MMMM yyyy", Locale("es", "MX"))
-            val date = formatEntrada.parse(fechaTexto)
-            SimpleDateFormat("yyyy-MM-dd", Locale.US).format(date!!)
-        } catch (e: Exception) { "" }
     }
 }
